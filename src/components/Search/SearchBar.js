@@ -4,7 +4,8 @@ import Stack from "@mui/material/Stack";
 import Autocomplete from "@mui/material/Autocomplete";
 import axios from "axios";
 
-export default function SearchBar({ foodData }) {
+// export default function SearchBar({ foodData }) {
+export default function SearchBar() {
   //autocomplete
 
   //display results table
@@ -38,7 +39,7 @@ export default function SearchBar({ foodData }) {
         freeSolo
         id="free-solo-2-demo"
         disableClearable
-        options={foodData.map((option) => option.description)}
+        // options={foodData.map((option) => option.description)}
         renderInput={(params) => (
           <TextField
             {...params}
