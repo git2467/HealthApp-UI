@@ -13,23 +13,21 @@ import {
   Pagination,
   CircularProgress,
   Box,
-} from '@mui/material';
+} from "@mui/material";
 
-export default function SearchBar() {
-  const [searchTerm, setSearchTerm] = useState('');
+export default function SearchBar({ selectedFood }) {
+  const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
-  const [selectedResultId, setSelectedResultId] = useState('');
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
   const handleRowClick = (id) => {
-    setSelectedResultId(id);
-    console.log(selectedResultId);
+    selectedFood(id);
   };
 
   const searchData = async (query = searchTerm, pageNumber = currentPage) => {
@@ -39,9 +37,9 @@ export default function SearchBar() {
         `https://api.nal.usda.gov/fdc/v1/foods/search?api_key=rOo4DaIsn7eVzqvRnLPSrUA4khrQ3v3pydrAFDVg`,
         {
           query,
-          dataType: ['SR Legacy'],
-          sortBy: 'dataType.keyword',
-          sortOrder: 'asc',
+          dataType: ["SR Legacy"],
+          sortBy: "dataType.keyword",
+          sortOrder: "asc",
           pageNumber,
         }
       );
@@ -50,7 +48,7 @@ export default function SearchBar() {
       setCurrentPage(response.data.currentPage);
       setSearchResults(response.data.foods);
     } catch (error) {
-      console.error('Error fetching search results:', error);
+      console.error("Error fetching search results:", error);
     } finally {
       setLoading(false);
     }
@@ -71,43 +69,44 @@ export default function SearchBar() {
         sx={{ marginBottom: 2 }}
       />
       {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 2 }}>
+        <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
           <CircularProgress />
         </Box>
-      ) : ( searchTerm && (
-        <>
-          <TableContainer component={Paper} sx={{ marginTop: 2 }}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Food Name</TableCell>
-                  <TableCell>FDC ID</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {searchResults.map((searchResult) => (
-                  <TableRow 
-                    key={searchResult.fdcId}
-                    hover
-                    onClick={() => handleRowClick(searchResult.fdcId)}
-                    sx={{ cursor: 'pointer' }}
-                  >
-                    <TableCell>{searchResult.description}</TableCell>
-                    <TableCell>{searchResult.fdcId}</TableCell>
+      ) : (
+        searchTerm && (
+          <>
+            <TableContainer component={Paper} sx={{ marginTop: 2 }}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Food Name</TableCell>
+                    <TableCell>FDC ID</TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <Pagination
-            count={totalPages}
-            page={currentPage}
-            onChange={handlePageChange}
-            sx={{ marginTop: 2, display: 'flex', justifyContent: 'center' }}
-          />
-        </>
-      )
-    )}
-  </Box>
-);
-;}
+                </TableHead>
+                <TableBody>
+                  {searchResults.map((searchResult) => (
+                    <TableRow
+                      key={searchResult.fdcId}
+                      hover
+                      onClick={() => handleRowClick(searchResult.fdcId)}
+                      sx={{ cursor: "pointer" }}
+                    >
+                      <TableCell>{searchResult.description}</TableCell>
+                      <TableCell>{searchResult.fdcId}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <Pagination
+              count={totalPages}
+              page={currentPage}
+              onChange={handlePageChange}
+              sx={{ marginTop: 2, display: "flex", justifyContent: "center" }}
+            />
+          </>
+        )
+      )}
+    </Box>
+  );
+}
