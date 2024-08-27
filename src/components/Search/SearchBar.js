@@ -1,56 +1,114 @@
-import * as React from "react";
-import TextField from "@mui/material/TextField";
-import Stack from "@mui/material/Stack";
-import Autocomplete from "@mui/material/Autocomplete";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-// export default function SearchBar({ foodData }) {
-export default function SearchBar() {
-  //autocomplete
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  TextField,
+  Pagination,
+  CircularProgress,
+  Box,
+} from "@mui/material";
 
-  //display results table
-  try {
-    var data = {
-      query: "Cheddar cheese",
-      dataType: ["Foundation", "SR Legacy"],
-      pageSize: 25,
-      pageNumber: 2,
-      sortBy: "dataType.keyword",
-      sortOrder: "asc",
-    };
-    axios
-      // https://fdc.nal.usda.gov/portal-data/external/173858
-      .post(
+export default function SearchBar() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [selectedResultId, setSelectedResultId] = useState("");
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const handleRowClick = (id) => {
+    setSelectedResultId(id);
+    console.log(selectedResultId);
+  };
+
+  const searchData = async (query = searchTerm, pageNumber = currentPage) => {
+    setLoading(true);
+    try {
+      const response = await axios.post(
         `https://api.nal.usda.gov/fdc/v1/foods/search?api_key=rOo4DaIsn7eVzqvRnLPSrUA4khrQ3v3pydrAFDVg`,
-        data
-      )
-      .then((res) => {
-        // console.log(res);
-        // console.log(res.data);
-        // console.log(res.data.foods);
-      });
-  } catch (error) {
-    console.log("error");
-  }
+        {
+          query,
+          dataType: ["SR Legacy"],
+          sortBy: "dataType.keyword",
+          sortOrder: "asc",
+          pageNumber,
+        }
+      );
+
+      setTotalPages(response.data.totalPages);
+      setCurrentPage(response.data.currentPage);
+      setSearchResults(response.data.foods);
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    searchData(searchTerm, currentPage);
+  }, [searchTerm, currentPage]);
 
   return (
-    <Stack spacing={2} sx={{ width: 300 }}>
-      <Autocomplete
-        freeSolo
-        id="free-solo-2-demo"
-        disableClearable
-        // options={foodData.map((option) => option.description)}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label="Search input"
-            InputProps={{
-              ...params.InputProps,
-              type: "search",
-            }}
-          />
-        )}
+    <Box sx={{ padding: 3 }}>
+      <h1>Food Nutrient</h1>
+      <TextField
+        label="Search for food..."
+        variant="outlined"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        sx={{ marginBottom: 2 }}
       />
-    </Stack>
+      {loading ? (
+        <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        searchTerm && (
+          <>
+            <TableContainer component={Paper} sx={{ marginTop: 2 }}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Food Name</TableCell>
+                    <TableCell>FDC ID</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {searchResults.map((searchResult) => (
+                    <TableRow
+                      key={searchResult.fdcId}
+                      hover
+                      onClick={() => handleRowClick(searchResult.fdcId)}
+                      sx={{ cursor: "pointer" }}
+                    >
+                      <TableCell>{searchResult.description}</TableCell>
+                      <TableCell>{searchResult.fdcId}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <Pagination
+              count={totalPages}
+              page={currentPage}
+              onChange={handlePageChange}
+              sx={{ marginTop: 2, display: "flex", justifyContent: "center" }}
+            />
+          </>
+        )
+      )}
+    </Box>
   );
 }
