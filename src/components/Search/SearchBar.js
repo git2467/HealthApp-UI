@@ -10,7 +10,6 @@ import {
   TableRow,
   Paper,
   TextField,
-  Button,
   Pagination,
   CircularProgress,
   Box,
@@ -22,9 +21,15 @@ export default function SearchBar() {
   const [loading, setLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
+  const [selectedResultId, setSelectedResultId] = useState('');
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
+  };
+
+  const handleRowClick = (id) => {
+    setSelectedResultId(id);
+    console.log(selectedResultId);
   };
 
   const searchData = async (query = searchTerm, pageNumber = currentPage) => {
@@ -81,7 +86,12 @@ export default function SearchBar() {
               </TableHead>
               <TableBody>
                 {searchResults.map((searchResult) => (
-                  <TableRow key={searchResult.fdcId}>
+                  <TableRow 
+                    key={searchResult.fdcId}
+                    hover
+                    onClick={() => handleRowClick(searchResult.fdcId)}
+                    sx={{ cursor: 'pointer' }}
+                  >
                     <TableCell>{searchResult.description}</TableCell>
                     <TableCell>{searchResult.fdcId}</TableCell>
                   </TableRow>
