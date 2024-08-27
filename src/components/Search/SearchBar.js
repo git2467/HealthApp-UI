@@ -15,21 +15,19 @@ import {
   Box,
 } from "@mui/material";
 
-export default function SearchBar() {
+export default function SearchBar({ selectedFood }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
-  const [selectedResultId, setSelectedResultId] = useState("");
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
   const handleRowClick = (id) => {
-    setSelectedResultId(id);
-    console.log(selectedResultId);
+    selectedFood(id);
   };
 
   const searchData = async (query = searchTerm, pageNumber = currentPage) => {

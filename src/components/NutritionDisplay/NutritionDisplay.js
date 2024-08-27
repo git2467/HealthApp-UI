@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -29,53 +29,55 @@ export default function NutritionDisplay({ selectedFood }) {
   const dailyRecommendedAmount = [2600, 55, 300, 2300, 300, 40];
   const nutrientsUnit = ["kcal", "g", "mg", "mg", "g", "g"];
 
-  try {
-    axios
-      .get(
-        `https://api.nal.usda.gov/fdc/v1/food/${selectedFood.fdcId}?api_key=rOo4DaIsn7eVzqvRnLPSrUA4khrQ3v3pydrAFDVg`
-      )
-      .then((res) => {
-        var foodNutrients = res.data.foodNutrients;
+  const getData = async () => {
+    try {
+      axios
+        .get(
+          `https://api.nal.usda.gov/fdc/v1/food/${selectedFood}?api_key=rOo4DaIsn7eVzqvRnLPSrUA4khrQ3v3pydrAFDVg`
+        )
+        .then((res) => {
+          var foodNutrients = res.data.foodNutrients;
 
-        // filter api response for the nutrients, but may not be in the order needed
-        const filteredNutrients = foodNutrients.filter((foodNutrient) => {
-          return nutrientsId.includes(foodNutrient.nutrient.id);
-        });
-
-        // loop through filtered nutrients to populate nutrients amount and nutrients amount as % daily value
-        filteredNutrients.map((nutrient) => {
-          nutrientsId.map((nutrientToSelect, index) => {
-            // compare nutrientids to populate the right nutrient amount and daily value
-            if (nutrientToSelect == nutrient.nutrient.id) {
-              nutrientsAmount[index] = nutrient.amount;
-              nutrientsAmountDaily[index] = Number(
-                nutrient.amount / dailyRecommendedAmount[index]
-              ).toLocaleString(undefined, {
-                style: "percent",
-                minimumFractionDigits: 1,
-              });
-            }
+          // filter api response for the nutrients, but may not be in the order needed
+          const filteredNutrients = foodNutrients.filter((foodNutrient) => {
+            return nutrientsId.includes(foodNutrient.nutrient.id);
           });
-        });
 
-        // create array to store the values to display
-        const newRows = nutrientsName.map((nutrientName, index) => {
-          return createData(
-            nutrientName,
-            `${nutrientsAmount[index]}${nutrientsUnit[index]}`,
-            `${nutrientsAmountDaily[index]}`
-          );
-        });
+          // loop through filtered nutrients to populate nutrients amount and nutrients amount as % daily value
+          filteredNutrients.map((nutrient) => {
+            nutrientsId.map((nutrientToSelect, index) => {
+              // compare nutrientids to populate the right nutrient amount and daily value
+              if (nutrientToSelect == nutrient.nutrient.id) {
+                nutrientsAmount[index] = nutrient.amount;
+                nutrientsAmountDaily[index] = Number(
+                  nutrient.amount / dailyRecommendedAmount[index]
+                ).toLocaleString(undefined, {
+                  style: "percent",
+                  minimumFractionDigits: 1,
+                });
+              }
+            });
+          });
 
-        if (rows.length == 0) {
+          // create array to store the values to display
+          const newRows = nutrientsName.map((nutrientName, index) => {
+            return createData(
+              nutrientName,
+              `${nutrientsAmount[index]}${nutrientsUnit[index]}`,
+              `${nutrientsAmountDaily[index]}`
+            );
+          });
           setRows(newRows);
-        }
-      });
-  } catch (error) {
-    console.log("error");
-  }
-
-  function handleChange() {}
+        });
+    } catch (error) {
+      console.log("error");
+    }
+  };
+  useEffect(() => {
+    if (selectedFood) {
+      getData();
+    }
+  }, [selectedFood]);
 
   return (
     <TableContainer component={Paper}>
