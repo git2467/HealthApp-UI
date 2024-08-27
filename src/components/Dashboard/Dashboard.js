@@ -12,6 +12,8 @@ const Dashboard = () => {
   //   fdcId: food.fdcId,
   // }));
   // console.log(foodData);
+
+  // added as example, will remove during integration
   var selectedFood = {
     fdcId: 167782,
     description: "Abiyuch, raw",

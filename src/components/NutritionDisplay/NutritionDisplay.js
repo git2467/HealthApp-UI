@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -12,51 +12,70 @@ function createData(nutrient, amount, amountDaily) {
   return { nutrient, amount, amountDaily };
 }
 
-const nutrientDataMap = {
-  energy: [86, "KJ"],
-  totalFat: [204, "G"],
-  cholesterol: [601, "MG"],
-  sodium: [307, "MG"],
-  carbohydrate: [205, "G"],
-  protein: [203, "G"],
-};
-
-const rows = [
-  createData("Energy", 159, 6.0),
-  createData("Total Fat", 159, 6.0),
-  createData("Cholesterol", 237, 9.0),
-  createData("Sodium", 262, 16.0),
-  createData("Total Carbohydrate", 305, 3.7),
-  createData("Protein", 356, 16.0),
-];
-
 export default function NutritionDisplay({ selectedFood }) {
-  console.log(nutrientDataMap.totalFat[0]);
-  console.log(selectedFood);
+  const [rows, setRows] = useState([]);
+  const nutrientsName = [
+    "Energy",
+    "Total Fat",
+    "Cholesterol",
+    "Sodium",
+    "Total Carbohydrate",
+    "Protein",
+  ];
+  const nutrientsId = [1008, 1004, 1253, 1093, 1005, 1003];
+  const nutrientsAmount = [0, 0, 0, 0, 0, 0];
+  const nutrientsAmountDaily = [0, 0, 0, 0, 0, 0];
+  // arbitary close values, to be updated later after more discussion/fact check
+  const dailyRecommendedAmount = [2600, 55, 300, 2300, 300, 40];
+  const nutrientsUnit = ["kcal", "g", "mg", "mg", "g", "g"];
 
   try {
-    var data = {
-      query: "Cheddar cheese",
-      dataType: ["Foundation", "SR Legacy"],
-      pageSize: 25,
-      pageNumber: 2,
-      sortBy: "dataType.keyword",
-      sortOrder: "asc",
-    };
     axios
-      // https://fdc.nal.usda.gov/portal-data/external/173858
-      .post(
-        `https://api.nal.usda.gov/fdc/v1/foods/search?api_key=rOo4DaIsn7eVzqvRnLPSrUA4khrQ3v3pydrAFDVg`,
-        data
+      .get(
+        `https://api.nal.usda.gov/fdc/v1/food/${selectedFood.fdcId}?api_key=rOo4DaIsn7eVzqvRnLPSrUA4khrQ3v3pydrAFDVg`
       )
       .then((res) => {
-        // console.log(res);
-        // console.log(res.data);
-        // console.log(res.data.foods);
+        var foodNutrients = res.data.foodNutrients;
+
+        // filter api response for the nutrients, but may not be in the order needed
+        const filteredNutrients = foodNutrients.filter((foodNutrient) => {
+          return nutrientsId.includes(foodNutrient.nutrient.id);
+        });
+
+        // loop through filtered nutrients to populate nutrients amount and nutrients amount as % daily value
+        filteredNutrients.map((nutrient) => {
+          nutrientsId.map((nutrientToSelect, index) => {
+            // compare nutrientids to populate the right nutrient amount and daily value
+            if (nutrientToSelect == nutrient.nutrient.id) {
+              nutrientsAmount[index] = nutrient.amount;
+              nutrientsAmountDaily[index] = Number(
+                nutrient.amount / dailyRecommendedAmount[index]
+              ).toLocaleString(undefined, {
+                style: "percent",
+                minimumFractionDigits: 1,
+              });
+            }
+          });
+        });
+
+        // create array to store the values to display
+        const newRows = nutrientsName.map((nutrientName, index) => {
+          return createData(
+            nutrientName,
+            `${nutrientsAmount[index]}${nutrientsUnit[index]}`,
+            `${nutrientsAmountDaily[index]}`
+          );
+        });
+
+        if (rows.length == 0) {
+          setRows(newRows);
+        }
       });
   } catch (error) {
     console.log("error");
   }
+
+  function handleChange() {}
 
   return (
     <TableContainer component={Paper}>
