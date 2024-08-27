@@ -6,18 +6,12 @@ import "./Dashboard.css";
 import data from "../../data/foodData.json";
 
 const Dashboard = () => {
-  const foodData = data.SRLegacyFoods.map((food) => ({
-    description: food.description,
-    fdcId: food.fdcId,
-  }));
-  console.log(foodData);
-
   return (
     <div className="dashboard">
       <Header />
       <div className="dashboard-body">
         <Sidebar />
-        <SearchBar foodData={foodData} />
+        <SearchBar/>
       </div>
     </div>
   );
