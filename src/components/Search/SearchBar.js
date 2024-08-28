@@ -20,7 +20,7 @@ export default function SearchBar({ selectedFood }) {
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -30,7 +30,7 @@ export default function SearchBar({ selectedFood }) {
     selectedFood(id);
   };
 
-  const searchData = async (query = searchTerm, pageNumber = currentPage) => {
+  const searchData = async (query = searchTerm, pageNumber = currentPage, pageSize = 10) => {
     setLoading(true);
     try {
       const response = await axios.post(
@@ -41,12 +41,14 @@ export default function SearchBar({ selectedFood }) {
           sortBy: "dataType.keyword",
           sortOrder: "asc",
           pageNumber,
+          pageSize,
         }
       );
 
       setTotalPages(response.data.totalPages);
       setCurrentPage(response.data.currentPage);
       setSearchResults(response.data.foods);
+
     } catch (error) {
       console.error("Error fetching search results:", error);
     } finally {
@@ -101,7 +103,7 @@ export default function SearchBar({ selectedFood }) {
             <Pagination
               count={totalPages}
               page={currentPage}
-              onChange={handlePageChange}
+              onChange={(event, value)=>handlePageChange(value)}
               sx={{ marginTop: 2, display: "flex", justifyContent: "center" }}
             />
           </>
