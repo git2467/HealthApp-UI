@@ -1,0 +1,20 @@
+.tableHead{
+  .tableCell {
+    color: blue;
+    background-color: #F9FAFB;
+    font-weight: bold;
+  }
+}
+
+.tableRow {
+  background-color: white;
+  cursor: default;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &.no-hover {
+    cursor: default;
+  }
+}
