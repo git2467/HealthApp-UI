@@ -1,0 +1,26 @@
+.mainContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+
+  header {
+    background-color: #282c34;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .mainBody {
+    display: flex;
+    flex: 1;
+  }
+  
+  .mainSearch {
+    width: 50%;
+  }
+  
+  .mainNutritionDisplay {
+    width: 50%;
+  }
+}
+
