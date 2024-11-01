@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { fetchNutrients } from "../../api/Api";
+import { fetchNutrients } from "../../api/FDCApi";
 import Table from "../Table/Table";
 import { Box } from "@mui/material";
 
