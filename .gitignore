@@ -12,7 +12,10 @@
 /build
 
 # misc
+.vscode/
+.idea/
 .DS_Store
+Thumbs.db
 .env.local
 .env.development.local
 .env.test.local
