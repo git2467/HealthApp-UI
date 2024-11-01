@@ -1,12 +1,12 @@
-import axios from "axios";
 import Nutrient from "../objects/Nutrient";
+import { fdcAxiosInstance } from "./KeycloakApi";
 
 const API_KEY = "rOo4DaIsn7eVzqvRnLPSrUA4khrQ3v3pydrAFDVg";
 
 export const fetchFoods = async (searchTerm, currentPage) => {
   try {
-    const response = await axios.post(
-      `https://api.nal.usda.gov/fdc/v1/foods/search?api_key=${API_KEY}`,
+    const response = await fdcAxiosInstance.post(
+      `/foods/search?api_key=${API_KEY}`,
       {
         query: searchTerm,
         dataType: ["SR Legacy"],
@@ -34,8 +34,8 @@ export const fetchNutrients = async (searchId) => {
   ];
 
   try {
-      const response = await axios.get(
-        `https://api.nal.usda.gov/fdc/v1/food/${searchId}?api_key=${API_KEY}`
+      const response = await fdcAxiosInstance.get(
+        `/food/${searchId}?api_key=${API_KEY}`
       )
       
       //filter out unnecessary nutrients
