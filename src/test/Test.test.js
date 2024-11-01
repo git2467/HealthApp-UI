@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import Search from "../components/Search/Search";
 import NutritionDisplay from "../components/NutritionDisplay/NutritionDisplay";
 import { fetchFoods, fetchNutrients } from "../api/Api";
+import userEvent from "@testing-library/user-event";
 
 jest.mock("../api/Api", () => ({
   fetchFoods: jest.fn(),

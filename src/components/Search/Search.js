@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { fetchFoods } from "../../api/FDCApi";
+import { fetchFoods } from "../../api/Api";
 import Table from "../Table/Table";
 
 import { TextField, CircularProgress, Box } from "@mui/material";
