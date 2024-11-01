@@ -1,16 +1,45 @@
 import { engineAxiosInstance } from "./KeycloakApi";
 
-const USER_ID = "user200";
-
-export const fetchFoodDiaryById = async () => {
+export const fetchFoodEntryByDate = async (foodDate) => {
   try {
     const response = await engineAxiosInstance.get(
-      `/entry/id?keycloakId=${USER_ID}`
+      `/entry/date?keycloakId=${localStorage.getItem(
+        "keycloakId"
+      )}&foodDate=${foodDate}`
     );
-    console.log(response);
     return response;
   } catch (error) {
-    console.error("Error fetching search results:", error);
+    console.error("Error fetching food entry: ", error);
+    throw error;
+  }
+};
+
+export const createFoodEntry = async (foodEntry) => {
+  try {
+    const response = await engineAxiosInstance.post(`/entry/create`, foodEntry);
+    return response;
+  } catch (error) {
+    console.error("Error creating food entry: ", error);
+    throw error;
+  }
+};
+
+export const updateFoodEntry = async (foodEntry) => {
+  try {
+    const response = await engineAxiosInstance.put(`/entry/update`, foodEntry);
+    return response;
+  } catch (error) {
+    console.error("Error updating food entry: ", error);
+    throw error;
+  }
+};
+
+export const deleteFoodEntryById = async (id) => {
+  try {
+    const response = await engineAxiosInstance.delete(`/entry/delete`);
+    return response;
+  } catch (error) {
+    console.error("Error deleting food entry: ", error);
     throw error;
   }
 };
