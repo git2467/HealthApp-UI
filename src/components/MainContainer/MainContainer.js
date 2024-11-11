@@ -10,12 +10,13 @@ import { login } from "../../api/KeycloakApi";
 import { AuthContext } from "../../context/AuthContext";
 
 const MainContainer = () => {
-  const { isLogin, setIsLogin } = useContext(AuthContext);
+  const {isLogin, setIsLogin} = useContext(AuthContext);
   const [selectedFood, setSelectedFood] = useState("");
   const [diaryDate, setDiaryDate] = useState(dayjs());
   // refresh key is to for nutrition display to let food diary know that there's a new food entry
   const [refreshKey, setRefreshKey] = useState(0);
   const [code, setCode] = useState("");
+  const [username, setUsername] = useState("");
 
   const handleSelectedRow = (row) => {
     setSelectedFood(row);
@@ -33,12 +34,15 @@ const MainContainer = () => {
   }, []);
 
   useEffect(() => {
+    const keycloakId = localStorage.getItem('keycloakId');
+
     //use authorisation code to retrieve access token
-    if (code) {
+    if (code && !keycloakId) {
       const handleLogin = async () => {
         try {
           await login(code);
           setIsLogin(true);
+          setUsername(localStorage.getItem("keycloakUsername"));
         } catch (error) {
           console.error("Error in handleLogin:", error);
           setIsLogin(false);
@@ -46,12 +50,16 @@ const MainContainer = () => {
       };
 
       handleLogin();
+    }else if(code && keycloakId){
+      //when user refresh page
+      setIsLogin(true);
+      setUsername(localStorage.getItem("keycloakUsername"));
     }
   }, [code]);
 
   return (
     <div className="mainContainer">
-      <Header />
+      <Header username={username}/>
       <div className="mainBody">
         <div className="mainSearch">
           <Search onRowSelected={handleSelectedRow} />

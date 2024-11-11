@@ -279,8 +279,7 @@ export default function FoodDiary({ foodDate, key }) {
     if (foodDate !== null) {
       updateFoodEntryByDate();
     }
-    console.log("inside fooddiary..." + localStorage.getItem("keycloakId"));
-  }, [foodDate, key]);
+  }, [foodDate]);
 
   // update food entries when other thing changes besides date
   useEffect(() => {
