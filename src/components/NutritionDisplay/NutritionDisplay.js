@@ -21,7 +21,7 @@ import {
   Snackbar,
 } from "@mui/material";
 import dayjs from "dayjs";
-import DateSelector from "../../DateSelector/DateSelector";
+import DateSelector from "../DateSelector/DateSelector";
 
 export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
   const columns = [
@@ -60,7 +60,7 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
       const matchingInput = inputs.find(
         (input) => nutrient.name === input.name
       );
-      let dailyAmt = ""; // Set a default for dailyAmt
+      let dailyAmt = "";
       if (matchingInput) {
         // Calculate nutrient's daily amount (percentage)
         dailyAmt = Number(

@@ -25,6 +25,7 @@ export const createFoodEntry = async (foodEntry) => {
 };
 
 export const updateFoodEntry = async (foodEntry) => {
+  console.log(foodEntry);
   try {
     const response = await engineAxiosInstance.put(`/entry/update`, foodEntry);
     return response;
@@ -36,7 +37,9 @@ export const updateFoodEntry = async (foodEntry) => {
 
 export const deleteFoodEntryById = async (id) => {
   try {
-    const response = await engineAxiosInstance.delete(`/entry/delete`);
+    const response = await engineAxiosInstance.delete(`/entry/delete`, {
+      data: id,
+    });
     return response;
   } catch (error) {
     console.error("Error deleting food entry: ", error);
