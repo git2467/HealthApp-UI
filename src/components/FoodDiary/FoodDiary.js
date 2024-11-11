@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import Table from "../Table/Table";
 import dayjs from "dayjs";
 import {
@@ -11,6 +11,7 @@ import {
   fetchFoodEntryByDate,
   updateFoodEntry,
 } from "../../api/EngineApi";
+import { debounce } from "lodash";
 
 // Also used by nutritiondisplay to calculate
 export const calculateFoodNutrients = (
@@ -28,7 +29,7 @@ export const calculateFoodNutrients = (
   return foodNutrients;
 };
 
-export default function FoodDiary({ foodDate }) {
+export default function FoodDiary({ foodDate, key }) {
   // add a type in column to put as dropdown, or input field
   const columns = [
     { label: "Food Name", field: "foodName" },
@@ -203,7 +204,6 @@ export default function FoodDiary({ foodDate }) {
   const updateFoodEntryByDate = async () => {
     try {
       const response = await fetchFoodEntryByDate(foodDate);
-
       const updatedRows = await Promise.all(
         response.data.map(async (food) => {
           // Fetch nutrients for the current food item
@@ -290,32 +290,66 @@ export default function FoodDiary({ foodDate }) {
       setTotalRows([
         {
           text: "Total",
-          energy: totals.energy,
-          fat: totals.fat,
-          cholesterol: totals.cholesterol,
-          sodium: totals.sodium,
-          carbohydrate: totals.carbohydrate,
-          protein: totals.protein,
+          energy:
+            totals.energy +
+            inputs.find((input) => input.name === "Energy").unit,
+          fat:
+            totals.fat +
+            inputs.find((input) => input.name === "Total Fat").unit,
+          cholesterol:
+            totals.cholesterol +
+            inputs.find((input) => input.name === "Cholesterol").unit,
+          sodium:
+            totals.sodium +
+            inputs.find((input) => input.name === "Sodium").unit,
+          carbohydrate:
+            totals.carbohydrate +
+            inputs.find((input) => input.name === "Total Carbohydrate").unit,
+          protein:
+            totals.protein +
+            inputs.find((input) => input.name === "Protein").unit,
         },
         {
           text: "Goal",
-          energy: (totals.energy + remaining.energy).toFixed(2),
-          fat: (totals.fat + remaining.fat).toFixed(2),
-          cholesterol: (totals.cholesterol + remaining.cholesterol).toFixed(2),
-          sodium: (totals.sodium + remaining.sodium).toFixed(2),
-          carbohydrate: (totals.carbohydrate + remaining.carbohydrate).toFixed(
-            2
-          ),
-          protein: (totals.protein + remaining.protein).toFixed(2),
+          energy:
+            (totals.energy + remaining.energy).toFixed(2) +
+            inputs.find((input) => input.name === "Energy").unit,
+          fat:
+            (totals.fat + remaining.fat).toFixed(2) +
+            inputs.find((input) => input.name === "Total Fat").unit,
+          cholesterol:
+            (totals.cholesterol + remaining.cholesterol).toFixed(2) +
+            inputs.find((input) => input.name === "Cholesterol").unit,
+          sodium:
+            (totals.sodium + remaining.sodium).toFixed(2) +
+            inputs.find((input) => input.name === "Sodium").unit,
+          carbohydrate:
+            (totals.carbohydrate + remaining.carbohydrate).toFixed(2) +
+            inputs.find((input) => input.name === "Total Carbohydrate").unit,
+          protein:
+            (totals.protein + remaining.protein).toFixed(2) +
+            inputs.find((input) => input.name === "Protein").unit,
         },
         {
           text: "Remaining",
-          energy: remaining.energy,
-          fat: remaining.fat,
-          cholesterol: remaining.cholesterol,
-          sodium: remaining.sodium,
-          carbohydrate: remaining.carbohydrate,
-          protein: remaining.protein,
+          energy:
+            remaining.energy +
+            inputs.find((input) => input.name === "Energy").unit,
+          fat:
+            remaining.fat +
+            inputs.find((input) => input.name === "Total Fat").unit,
+          cholesterol:
+            remaining.cholesterol +
+            inputs.find((input) => input.name === "Cholesterol").unit,
+          sodium:
+            remaining.sodium +
+            inputs.find((input) => input.name === "Sodium").unit,
+          carbohydrate:
+            remaining.carbohydrate +
+            inputs.find((input) => input.name === "Total Carbohydrate").unit,
+          protein:
+            remaining.protein +
+            inputs.find((input) => input.name === "Protein").unit,
         },
       ]);
     }
@@ -347,36 +381,87 @@ export default function FoodDiary({ foodDate }) {
     }
   };
 
-  const handleInputChange = (value, rowToUpdate, fieldToUpdate, changeType) => {
+  // usedebounce hook to delay execution by specified delay
+  const useDebounce = (callback, delay = 500) => {
+    const callbackRef = useRef(callback);
+
+    // Update the ref when the callback changes
+    useEffect(() => {
+      callbackRef.current = callback;
+    }, [callback]);
+
+    return useMemo(() => {
+      // Return a debounced function that returns a promise
+      const debouncedFunction = debounce(
+        (...args) => callbackRef.current(...args),
+        delay
+      );
+
+      return (...args) =>
+        new Promise((resolve, reject) => {
+          debouncedFunction(...args)
+            .then(resolve)
+            .catch(reject);
+        });
+    }, [delay]);
+  };
+
+  const debouncedRequest = useDebounce(async (rowToUpdate, foodServingQty) => {
+    try {
+      // Get the current selected serving size gram value
+      const servingSizeGramValue = rowToUpdate.servingSizeDisplay.find(
+        (option) => option.selected
+      ).foodServingSizeGramValue;
+
+      // Update nutrients based on the current foodServingQty
+      const updatedRow = await updateFoodNutrients(
+        rowToUpdate,
+        servingSizeGramValue,
+        foodServingQty
+      );
+      updateGroupedRows(updatedRow);
+      return updatedRow;
+    } catch (error) {
+      console.error("Error updating food nutrients:", error);
+    }
+  });
+
+  const handleInputChange = async (
+    value,
+    rowToUpdate,
+    fieldToUpdate,
+    changeType
+  ) => {
     if (fieldToUpdate == "foodServingQty") {
-      (async () => {
-        try {
-          // Get the current selected serving size gram value
-          const servingSizeGramValue = rowToUpdate.servingSizeDisplay.find(
-            (option) => option.selected
-          ).foodServingSizeGramValue;
-
-          // update input values
-          const updatedRow = await updateFoodNutrients(
-            rowToUpdate,
-            servingSizeGramValue,
-            value
-          );
-
-          // Update row display
-          updateGroupedRows(updatedRow);
-
-          // update database if user exit the input box
-          if (changeType == "blur") {
-            await updateFoodEntryDB({ ...updatedRow, foodServingQty: value });
-          }
-        } catch (error) {
-          console.error("Error updating food quantity in database: ", error);
+      // update row with the changed serving size qty (before nutrients)
+      setRows((prevRows) => {
+        return prevRows.map((mealGroup) => {
+          // meal here refers to breakfast/lunch/dinner
+          const [meal, ...rowsForMeal] = mealGroup;
+          const updatedRowsForMeal = rowsForMeal.map((row) => {
+            if (row.id === rowToUpdate.id) {
+              return {
+                ...row,
+                foodServingQty: value,
+              };
+            }
+            return row;
+          });
+          return [meal, ...updatedRowsForMeal];
+        });
+      });
+      try {
+        // recalculate and update nutrient display every xx seconds
+        const updatedRow = await debouncedRequest(rowToUpdate, value);
+        // update database if user exit the input box
+        if (changeType == "blur") {
+          await updateFoodEntryDB({ ...updatedRow, foodServingQty: value });
         }
-      })();
+      } catch (error) {
+        console.error("Error updating food quantity in database: ", error);
+      }
     }
 
-    // servingsize display
     if (fieldToUpdate == "servingSizeDisplay") {
       (async () => {
         try {

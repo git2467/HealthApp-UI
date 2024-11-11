@@ -10,9 +10,6 @@ const fdcAxiosInstance = axios.create({
 
 const engineAxiosInstance = axios.create({
   baseURL: "http://localhost:9013",
-  params: {
-    keycloakId: localStorage.getItem("keycloakId"),
-  },
 });
 
 export { fdcAxiosInstance, engineAxiosInstance };

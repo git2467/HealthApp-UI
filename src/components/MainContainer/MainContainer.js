@@ -13,6 +13,8 @@ const MainContainer = () => {
   const {isLogin, setIsLogin} = useContext(AuthContext);
   const [selectedFood, setSelectedFood] = useState("");
   const [diaryDate, setDiaryDate] = useState(dayjs());
+  // refresh key is to for nutrition display to let food diary know that there's a new food entry
+  const [refreshKey, setRefreshKey] = useState(0);
   const [code, setCode] = useState("");
   const [username, setUsername] = useState("");
 
@@ -22,6 +24,7 @@ const MainContainer = () => {
 
   const handleDateChange = (date) => {
     setDiaryDate(date);
+    setRefreshKey((prevKey) => prevKey + 1);
   };
 
   useEffect(() => {
@@ -77,7 +80,7 @@ const MainContainer = () => {
             onDateChange={handleDateChange}
             showNavButtons={true}
           />
-          <FoodDiary foodDate={diaryDate} />
+          <FoodDiary foodDate={diaryDate} key={refreshKey} />
         </>
       ) : (
         <>
