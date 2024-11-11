@@ -24,7 +24,7 @@ export const setTokenInAxios = (token) => {
     ] = `Bearer ${token}`;
   } else {
     delete engineAxiosInstance.defaults.headers.common["Authorization"];
-    console.log("removed access token from axios instance...");
+    console.log("Removed access token from engine axios instance");
   }
 };
 
