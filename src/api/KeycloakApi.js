@@ -65,17 +65,10 @@ export const login = async (code) => {
     localStorage.setItem("refreshToken", refreshToken);
 
     const decodedToken = jwtDecode(accessToken);
-    console.log(decodedToken);
-    const keycloakId = decodedToken.sub;
-    const keycloakUsername = decodedToken.preferred_username;
-    const age = decodedToken.age;
-
-    localStorage.setItem("keycloakId", keycloakId);
-    localStorage.setItem("keycloakUsername", keycloakUsername);
-    localStorage.setItem("age", age);
 
     setTokenInAxios(accessToken);
     console.log("Logged in successfully.");
+    return decodedToken;
   } catch (error) {
     console.error("Error logging in: ", error);
     throw error;
@@ -111,13 +104,8 @@ export const refreshToken = async () => {
 
     const newAccessToken = response.data.access_token;
     const newRefreshToken = response.data.refresh_token;
-
     localStorage.setItem("accessToken", newAccessToken);
     localStorage.setItem("refreshToken", newRefreshToken);
-
-    const decodedToken = jwtDecode(newAccessToken);
-    const keycloakId = decodedToken.sub;
-    localStorage.setItem("keycloakId", keycloakId);
 
     setTokenInAxios(newAccessToken);
     console.log("Obtained new access token successfully.");
@@ -153,8 +141,6 @@ export const logout = async () => {
 
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
-    localStorage.removeItem("keycloakId");
-    localStorage.removeItem("age");
     console.log("Logged out successfully.");
   } catch (error) {
     console.error("Error logging out:", error);

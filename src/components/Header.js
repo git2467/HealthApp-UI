@@ -5,8 +5,9 @@ import { AuthContext } from "../context/AuthContext";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 
-const Header = ({ username }) => {
-  const { isLogin, setIsLogin } = useContext(AuthContext);
+const Header = () => {
+  const { decodedToken, setDecodedToken, isLogin, setIsLogin } =
+    useContext(AuthContext);
 
   const handleLogout = () => {
     logout();
@@ -45,7 +46,7 @@ const Header = ({ username }) => {
       {isLogin ? (
         //after login aka isLogin == true
         <div>
-          <p>Welcome, {username}!</p>
+          <p>Welcome, {decodedToken.preferred_username}!</p>
           <div className="logout-wrapper">
             <Button disabled={!isLogin} onClick={() => handleLogout()}>
               Logout

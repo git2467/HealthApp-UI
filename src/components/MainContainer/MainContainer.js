@@ -6,11 +6,13 @@ import "./MainContainer.scss";
 import NutritionDisplay from "../NutritionDisplay/NutritionDisplay";
 import FoodDiary from "../FoodDiary/FoodDiary";
 import DateSelector from "../DateSelector/DateSelector";
-import { login } from "../../api/KeycloakApi";
+import { login, refreshToken } from "../../api/KeycloakApi";
+import { jwtDecode } from "jwt-decode";
 import { AuthContext } from "../../context/AuthContext";
 
 const MainContainer = () => {
-  const { isLogin, setIsLogin, setAge } = useContext(AuthContext);
+  const { decodedToken, setDecodedToken, isLogin, setIsLogin } =
+    useContext(AuthContext);
   const [selectedFood, setSelectedFood] = useState("");
   const [diaryDate, setDiaryDate] = useState(dayjs());
   // refresh key is to for nutrition display to let food diary know that there's a new food entry
@@ -34,36 +36,40 @@ const MainContainer = () => {
   }, []);
 
   useEffect(() => {
-    const keycloakId = localStorage.getItem("keycloakId");
-
+    const accessToken = localStorage.getItem("accessToken");
     //use authorisation code to retrieve access token
-    if (code && !keycloakId) {
+    if (code && !accessToken) {
       const handleLogin = async () => {
         try {
-          await login(code);
+          const response = await login(code);
+          setDecodedToken(response);
           setIsLogin(true);
-          const age = localStorage.getItem("age");
-          setAge(age);
-          setUsername(localStorage.getItem("keycloakUsername"));
         } catch (error) {
           console.error("Error in handleLogin:", error);
           setIsLogin(false);
         }
       };
-
       handleLogin();
-    } else if (code && keycloakId) {
+    } else if (code && accessToken) {
       //when user refresh page
-      const age = localStorage.getItem("age");
-      setIsLogin(true);
-      setAge(age);
-      setUsername(localStorage.getItem("keycloakUsername"));
+      const handleRefreshPage = async () => {
+        try {
+          await refreshToken();
+          setDecodedToken(jwtDecode(accessToken));
+          setIsLogin(true);
+        } catch (error) {
+          console.error("Error in handleRefreshPage:", error);
+          setIsLogin(false);
+        }
+      };
+      handleRefreshPage();
+      console.log("im here");
     }
   }, [code]);
 
   return (
     <div className="mainContainer">
-      <Header username={username} />
+      <Header />
       <div className="mainBody">
         <div className="mainSearch">
           <Search onRowSelected={handleSelectedRow} />
