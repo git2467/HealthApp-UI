@@ -1,6 +1,11 @@
 import Nutrient from "../objects/Nutrient";
 import { fdcAxiosInstance } from "./KeycloakApi";
+import nutrition from "../constants/nutrition.json";
 
+const { nutritionUnits, recommendedDefault, recommendedByAgeGroup } = nutrition;
+// console.log(nutritionUnits);
+
+// to remove inputs after all changes are done
 export const inputs = [
   { name: "Energy", id: 1008, recommendedAmt: 2600, unit: "kcal" },
   { name: "Total Fat", id: 1004, recommendedAmt: 55, unit: "g" },
@@ -33,19 +38,21 @@ export const fetchNutrients = async (searchId) => {
 
     //filter out unnecessary nutrients
     const objects = response.data.foodNutrients.filter((foodNutrient) => {
-      return inputs.some((input) => input.id == foodNutrient.nutrient.id);
+      return recommendedDefault.some(
+        (recommended) => recommended.id == foodNutrient.nutrient.id
+      );
     });
 
     //restructure output
     const nutrients = objects.map((object) => {
       var nutrient = new Nutrient();
-      inputs.map((input) => {
-        if (object.nutrient.id === input.id) {
+      nutritionUnits.map((nutritionUnit) => {
+        if (object.nutrient.id === nutritionUnit.id) {
           nutrient = new Nutrient(
-            input.id,
-            input.name,
+            nutritionUnit.id,
+            nutritionUnit.name,
             object.amount,
-            input.unit
+            nutritionUnit.unit
           );
         }
       });

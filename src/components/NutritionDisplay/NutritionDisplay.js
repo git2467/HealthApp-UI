@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
-import {
-  fetchNutrients,
-  fetchServingSizeOptions,
-  inputs,
-} from "../../api/FDCApi";
+import React, { useState, useEffect, useContext } from "react";
+import { fetchNutrients, fetchServingSizeOptions } from "../../api/FDCApi";
+
+import nutrition from "../../constants/nutrition.json";
+
 import { createFoodEntry } from "../../api/EngineApi";
 import { calculateFoodNutrients } from "../FoodDiary/FoodDiary";
 import Table from "../Table/Table";
@@ -22,6 +21,7 @@ import {
 } from "@mui/material";
 import dayjs from "dayjs";
 import DateSelector from "../DateSelector/DateSelector";
+import { AuthContext } from "../../context/AuthContext";
 
 export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
   const columns = [
@@ -29,6 +29,8 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
     { label: "Amount", field: "amount" },
     { label: "%Daily Value", field: "dailyAmt" },
   ];
+
+  const { age } = useContext(AuthContext);
   const [rows, setRows] = useState([]);
   const [nutrients, setNutrients] = useState();
 
@@ -45,6 +47,9 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
 
   const keycloakId = localStorage.getItem("keycloakId");
 
+  const { nutritionUnits, recommendedDefault, recommendedByAgeGroup } =
+    nutrition;
+
   // ------------ helper functions
   // get the numerical value "123" from the full display "123mg"
   function convertAmount(amountStr) {
@@ -57,19 +62,20 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
 
   function calculateDailyAmtValues(foodNutrients) {
     const dailyAmtValues = foodNutrients.map((nutrient) => {
-      const matchingInput = inputs.find(
-        (input) => nutrient.name === input.name
+      const matchedNutrient = recommendedDefault.find(
+        (recommended) => nutrient.name === recommended.name
       );
       let dailyAmt = "";
-      if (matchingInput) {
+      if (matchedNutrient) {
         // Calculate nutrient's daily amount (percentage)
         dailyAmt = Number(
-          convertAmount(nutrient.amount) / matchingInput.recommendedAmt
+          convertAmount(nutrient.amount) / matchedNutrient.recommendedAmt
         ).toLocaleString(undefined, {
           style: "percent",
           minimumFractionDigits: 1,
         });
       }
+
       return {
         name: nutrient.name,
         dailyAmt: dailyAmt,
@@ -237,6 +243,7 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
     if (selectedFood) {
       searchNutrients();
       setFoodServingQty(1);
+      console.log(age);
     }
   }, [selectedFood]);
 

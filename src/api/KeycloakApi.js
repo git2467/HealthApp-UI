@@ -65,10 +65,14 @@ export const login = async (code) => {
     localStorage.setItem("refreshToken", refreshToken);
 
     const decodedToken = jwtDecode(accessToken);
+    console.log(decodedToken);
     const keycloakId = decodedToken.sub;
     const keycloakUsername = decodedToken.preferred_username;
+    const age = decodedToken.age;
+
     localStorage.setItem("keycloakId", keycloakId);
     localStorage.setItem("keycloakUsername", keycloakUsername);
+    localStorage.setItem("age", age);
 
     setTokenInAxios(accessToken);
     console.log("Logged in successfully.");
@@ -150,6 +154,7 @@ export const logout = async () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("keycloakId");
+    localStorage.removeItem("age");
     console.log("Logged out successfully.");
   } catch (error) {
     console.error("Error logging out:", error);

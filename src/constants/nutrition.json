@@ -1,0 +1,37 @@
+{
+  "nutritionUnits": [
+    { "name": "Energy", "id": 1008, "unit": "kcal" },
+    { "name": "Total Fat", "id": 1004,  "unit": "g" },
+    { "name": "Cholesterol", "id": 1253, "unit": "mg" },
+    { "name": "Sodium", "id": 1093, "unit": "mg" },
+    { "name": "Total Carbohydrate", "id": 1005, "unit": "g" },
+    { "name": "Protein", "id": 1003, "unit": "g" }
+  ],
+
+  "recommendedDefault": [
+    { "name": "Energy", "id": 1008, "recommendedAmt": 2600 },
+    { "name": "Total Fat", "id": 1004, "recommendedAmt": 55 },
+    { "name": "Cholesterol", "id": 1253, "recommendedAmt": 300},
+    { "name": "Sodium", "id": 1093, "recommendedAmt": 2300 },
+    { "name": "Total Carbohydrate", "id": 1005, "recommendedAmt": 300 },
+    { "name": "Protein", "id": 1003, "recommendedAmt": 40}
+  ],
+  "recommendedByAgeGroup": {
+  "male": [
+    { "name": "Energy", "id": 1008, "recommendedAmt": 2600 },
+    { "name": "Total Fat", "id": 1004, "recommendedAmt": 55 },
+    { "name": "Cholesterol", "id": 1253, "recommendedAmt": 300},
+    { "name": "Sodium", "id": 1093, "recommendedAmt": 2300 },
+    { "name": "Total Carbohydrate", "id": 1005, "recommendedAmt": 300 },
+    { "name": "Protein", "id": 1003, "recommendedAmt": 40}
+  ],
+  "female": [
+    { "name": "Energy", "id": 1008, "recommendedAmt": 2600 },
+    { "name": "Total Fat", "id": 1004, "recommendedAmt": 55 },
+    { "name": "Cholesterol", "id": 1253, "recommendedAmt": 300},
+    { "name": "Sodium", "id": 1093, "recommendedAmt": 2300 },
+    { "name": "Total Carbohydrate", "id": 1005, "recommendedAmt": 300 },
+    { "name": "Protein", "id": 1003, "recommendedAmt": 40}
+  ]
+}
+}
