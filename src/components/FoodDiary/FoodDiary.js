@@ -122,11 +122,11 @@ export default function FoodDiary({ foodDate, key }) {
 
   foodDate = dayjs(foodDate).format("YYYY-MM-DD");
 
-  const { age } = useContext(AuthContext);
+  const { decodedToken, isLogin } = useContext(AuthContext);
   const [rows, setRows] = useState();
   const [totalRows, setTotalRows] = useState();
 
-  const keycloakId = localStorage.getItem("keycloakId");
+  const keycloakId = decodedToken.sub;
 
   // HELPER FUNCTIONS
   // Calculate the nutrient amounts based on serving size * serving qty
@@ -274,7 +274,8 @@ export default function FoodDiary({ foodDate, key }) {
   // MAIN FUNCTION
   const updateFoodEntryByDate = async () => {
     try {
-      const response = await fetchFoodEntryByDate(foodDate);
+      console.log(decodedToken);
+      const response = await fetchFoodEntryByDate(foodDate, keycloakId);
       const updatedRows = await Promise.all(
         response.data.map(async (food) => {
           // Fetch nutrients for the current food item
@@ -349,11 +350,10 @@ export default function FoodDiary({ foodDate, key }) {
 
   // update food entries when date changes
   useEffect(() => {
-    if (foodDate !== null) {
+    if (isLogin && foodDate !== null) {
       updateFoodEntryByDate();
-      console.log(age);
     }
-  }, [foodDate, key]);
+  }, [isLogin, foodDate, key]);
 
   // update food entries when other thing changes besides date
   useEffect(() => {

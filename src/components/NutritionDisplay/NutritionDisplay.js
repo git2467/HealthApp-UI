@@ -30,7 +30,9 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
     { label: "%Daily Value", field: "dailyAmt" },
   ];
 
-  const { age } = useContext(AuthContext);
+  const { decodedToken } = useContext(AuthContext);
+  const keycloakId = decodedToken.sub;
+
   const [rows, setRows] = useState([]);
   const [nutrients, setNutrients] = useState();
 
@@ -44,8 +46,6 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showSnackbar, setShowSnackbar] = useState(false);
-
-  const keycloakId = localStorage.getItem("keycloakId");
 
   const { nutritionUnits, recommendedDefault, recommendedByAgeGroup } =
     nutrition;
@@ -243,7 +243,6 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
     if (selectedFood) {
       searchNutrients();
       setFoodServingQty(1);
-      console.log(age);
     }
   }, [selectedFood]);
 
