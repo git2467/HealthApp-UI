@@ -2,9 +2,11 @@ import { Button } from "@mui/material";
 import React, { useContext } from "react";
 import { logout } from "../api/KeycloakApi";
 import { AuthContext } from "../context/AuthContext";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
 
-const Header = ({username}) => {
-  const {isLogin, setIsLogin} = useContext(AuthContext);
+const Header = ({ username }) => {
+  const { isLogin, setIsLogin } = useContext(AuthContext);
 
   const handleLogout = () => {
     logout();
@@ -29,6 +31,17 @@ const Header = ({username}) => {
   return (
     <header>
       <h1>Food Diary</h1>
+      <Select
+        labelId="demo-simple-select-label"
+        id="demo-simple-select"
+        value={"10"}
+        label="Age"
+        // onChange={handleChange}
+      >
+        <MenuItem value={10}>Ten</MenuItem>
+        <MenuItem value={20}>Twenty</MenuItem>
+        <MenuItem value={30}>Thirty</MenuItem>
+      </Select>
       {isLogin ? (
         //after login aka isLogin == true
         <div>
