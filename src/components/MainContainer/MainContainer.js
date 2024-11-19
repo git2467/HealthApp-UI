@@ -6,7 +6,7 @@ import "./MainContainer.scss";
 import NutritionDisplay from "../NutritionDisplay/NutritionDisplay";
 import FoodDiary from "../FoodDiary/FoodDiary";
 import DateSelector from "../DateSelector/DateSelector";
-import { login, refreshToken } from "../../api/KeycloakApi";
+import { login, refreshToken, getCookie } from "../../api/KeycloakApi";
 import { jwtDecode } from "jwt-decode";
 import { AuthContext } from "../../context/AuthContext";
 
@@ -36,7 +36,8 @@ const MainContainer = () => {
   }, []);
 
   useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
+    const accessToken = getCookie("accessToken");
+
     //use authorisation code to retrieve access token
     if (code && !accessToken) {
       const handleLogin = async () => {
@@ -44,13 +45,16 @@ const MainContainer = () => {
           const response = await login(code);
           setDecodedToken(response);
           setIsLogin(true);
+          console.log(
+            "retrieving token from cookie..." + getCookie("accessToken")
+          );
         } catch (error) {
           console.error("Error in handleLogin:", error);
           setIsLogin(false);
         }
       };
       handleLogin();
-    } else if (code && accessToken) {
+    } else if (accessToken) {
       //when user refresh page
       const handleRefreshPage = async () => {
         try {
@@ -63,7 +67,6 @@ const MainContainer = () => {
         }
       };
       handleRefreshPage();
-      console.log("im here");
     }
   }, [code]);
 
