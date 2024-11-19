@@ -274,7 +274,6 @@ export default function FoodDiary({ foodDate, key }) {
   // MAIN FUNCTION
   const updateFoodEntryByDate = async () => {
     try {
-      console.log(decodedToken);
       const response = await fetchFoodEntryByDate(foodDate, keycloakId);
       const updatedRows = await Promise.all(
         response.data.map(async (food) => {
