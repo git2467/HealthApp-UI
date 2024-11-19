@@ -30,8 +30,15 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
     { label: "%Daily Value", field: "dailyAmt" },
   ];
 
-  const { decodedToken } = useContext(AuthContext);
-  const keycloakId = decodedToken.sub;
+  const { decodedToken, isLogin } = useContext(AuthContext);
+  const keycloakId = decodedToken?.sub ?? null;
+  const age = decodedToken?.age ?? null;
+
+  const { nutritionUnits, recommendedDefault, recommendedByAgeGroup } =
+    nutrition;
+  const recommendedNutrients = isLogin
+    ? recommendedByAgeGroup[age]
+    : recommendedDefault;
 
   const [rows, setRows] = useState([]);
   const [nutrients, setNutrients] = useState();
@@ -47,9 +54,6 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showSnackbar, setShowSnackbar] = useState(false);
 
-  const { nutritionUnits, recommendedDefault, recommendedByAgeGroup } =
-    nutrition;
-
   // ------------ helper functions
   // get the numerical value "123" from the full display "123mg"
   function convertAmount(amountStr) {
@@ -62,7 +66,9 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
 
   function calculateDailyAmtValues(foodNutrients) {
     const dailyAmtValues = foodNutrients.map((nutrient) => {
-      const matchedNutrient = recommendedDefault.find(
+      // recommended based on user age group
+
+      const matchedNutrient = recommendedNutrients.find(
         (recommended) => nutrient.name === recommended.name
       );
       let dailyAmt = "";
@@ -135,7 +141,12 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
       // update rows display
       setRows(
         nutrients.map((nutrient) => ({
-          id: nutrient.name,
+          id:
+            nutrient.name +
+            ", " +
+            nutritionUnits.find(
+              (nutritionUnit) => nutritionUnit.name === nutrient.name
+            )?.unit,
           amount:
             foodNutrients.find(
               (foodNutrient) => foodNutrient.name === nutrient.name

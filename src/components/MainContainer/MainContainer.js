@@ -11,8 +11,7 @@ import { jwtDecode } from "jwt-decode";
 import { AuthContext } from "../../context/AuthContext";
 
 const MainContainer = () => {
-  const { decodedToken, setDecodedToken, isLogin, setIsLogin } =
-    useContext(AuthContext);
+  const { setDecodedToken, isLogin, setIsLogin } = useContext(AuthContext);
   const [selectedFood, setSelectedFood] = useState("");
   const [diaryDate, setDiaryDate] = useState(dayjs());
   // refresh key is to for nutrition display to let food diary know that there's a new food entry

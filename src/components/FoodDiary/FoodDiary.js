@@ -31,8 +31,13 @@ export const calculateFoodNutrients = (
 };
 
 export default function FoodDiary({ foodDate, key }) {
-  const { nutritionUnits, recommendedDefault, recommendedByAgeGroup } =
-    nutrition;
+  const { decodedToken } = useContext(AuthContext);
+  const keycloakId = decodedToken.sub;
+  const age = decodedToken.age;
+
+  const { nutritionUnits, recommendedByAgeGroup } = nutrition;
+  const recommendedNutrients = recommendedByAgeGroup[age];
+
   // add a type in column to put as dropdown, or input field
   const columns = [
     { label: "Food Name", field: "foodName" },
@@ -122,11 +127,8 @@ export default function FoodDiary({ foodDate, key }) {
 
   foodDate = dayjs(foodDate).format("YYYY-MM-DD");
 
-  const { decodedToken, isLogin } = useContext(AuthContext);
   const [rows, setRows] = useState();
   const [totalRows, setTotalRows] = useState();
-
-  const keycloakId = decodedToken.sub;
 
   // HELPER FUNCTIONS
   // Calculate the nutrient amounts based on serving size * serving qty
@@ -244,26 +246,29 @@ export default function FoodDiary({ foodDate, key }) {
   const calculateRemaining = (totals) => {
     const remaining = {
       energy:
-        recommendedDefault.find((recommended) => recommended.name === "Energy")
-          ?.recommendedAmt - totals.energy,
+        recommendedNutrients.find(
+          (recommended) => recommended.name === "Energy"
+        )?.recommendedAmt - totals.energy,
       fat:
-        recommendedDefault.find(
+        recommendedNutrients.find(
           (recommended) => recommended.name === "Total Fat"
         )?.recommendedAmt - totals.fat,
       cholesterol:
-        recommendedDefault.find(
+        recommendedNutrients.find(
           (recommended) => recommended.name === "Cholesterol"
         )?.recommendedAmt - totals.cholesterol,
       sodium:
-        recommendedDefault.find((recommended) => recommended.name === "Sodium")
-          ?.recommendedAmt - totals.sodium,
+        recommendedNutrients.find(
+          (recommended) => recommended.name === "Sodium"
+        )?.recommendedAmt - totals.sodium,
       carbohydrate:
-        recommendedDefault.find(
+        recommendedNutrients.find(
           (recommended) => recommended.name === "Total Carbohydrate"
         )?.recommendedAmt - totals.carbohydrate,
       protein:
-        recommendedDefault.find((recommended) => recommended.name === "Protein")
-          ?.recommendedAmt - totals.protein,
+        recommendedNutrients.find(
+          (recommended) => recommended.name === "Protein"
+        )?.recommendedAmt - totals.protein,
     };
     for (let key in remaining) {
       remaining[key] = parseFloat(remaining[key].toFixed(2));
@@ -274,6 +279,7 @@ export default function FoodDiary({ foodDate, key }) {
   // MAIN FUNCTION
   const updateFoodEntryByDate = async () => {
     try {
+      console.log(decodedToken);
       const response = await fetchFoodEntryByDate(foodDate, keycloakId);
       const updatedRows = await Promise.all(
         response.data.map(async (food) => {
@@ -349,10 +355,10 @@ export default function FoodDiary({ foodDate, key }) {
 
   // update food entries when date changes
   useEffect(() => {
-    if (isLogin && foodDate !== null) {
+    if (foodDate !== null) {
       updateFoodEntryByDate();
     }
-  }, [isLogin, foodDate, key]);
+  }, [foodDate, key]);
 
   // update food entries when other thing changes besides date
   useEffect(() => {
