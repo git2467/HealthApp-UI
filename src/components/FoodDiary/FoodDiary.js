@@ -412,50 +412,23 @@ export default function FoodDiary({ foodDate, key }) {
     }
   };
 
-  // usedebounce hook to delay execution by specified delay
-  const useDebounce = (callback, delay = 500) => {
-    const callbackRef = useRef(callback);
+  const useDebouncedHandlers = () => {
+    const debouncedHandlers = useRef(new Map());
 
-    // Update the ref when the callback changes
-    useEffect(() => {
-      callbackRef.current = callback;
-    }, [callback]);
+    const getDebouncedHandler = (key, callback, delay = 1000) => {
+      if (!debouncedHandlers.current.has(key)) {
+        // Create a new debounced handler for the field if it doesn't exist
+        const debouncedFunction = debounce(callback, delay);
+        debouncedHandlers.current.set(key, debouncedFunction);
+      }
 
-    return useMemo(() => {
-      // Return a debounced function that returns a promise
-      const debouncedFunction = debounce(
-        (...args) => callbackRef.current(...args),
-        delay
-      );
+      return debouncedHandlers.current.get(key);
+    };
 
-      return (...args) =>
-        new Promise((resolve, reject) => {
-          debouncedFunction(...args)
-            .then(resolve)
-            .catch(reject);
-        });
-    }, [delay]);
+    return getDebouncedHandler;
   };
 
-  const debouncedRequest = useDebounce(async (rowToUpdate, foodServingQty) => {
-    try {
-      // Get the current selected serving size gram value
-      const servingSizeGramValue = rowToUpdate.servingSizeDisplay.find(
-        (option) => option.selected
-      ).foodServingSizeGramValue;
-
-      // Update nutrients based on the current foodServingQty
-      const updatedRow = await updateFoodNutrients(
-        rowToUpdate,
-        servingSizeGramValue,
-        foodServingQty
-      );
-      updateGroupedRows(updatedRow);
-      return updatedRow;
-    } catch (error) {
-      console.error("Error updating food nutrients:", error);
-    }
-  });
+  const getDebouncedHandler = useDebouncedHandlers();
 
   const handleInputChange = async (
     value,
@@ -480,16 +453,32 @@ export default function FoodDiary({ foodDate, key }) {
           return [meal, ...updatedRowsForMeal];
         });
       });
-      try {
-        // recalculate and update nutrient display every xx seconds
-        const updatedRow = await debouncedRequest(rowToUpdate, value);
-        // update database if user exit the input box
-        if (changeType == "blur") {
-          await updateFoodEntryDB({ ...updatedRow, foodServingQty: value });
+
+      // create unique debounced request for each servingqty field
+      const debouncedRequest = getDebouncedHandler(
+        rowToUpdate.id,
+        async (value, rowToUpdate, changeType) => {
+          try {
+            const servingSizeGramValue = rowToUpdate.servingSizeDisplay.find(
+              (option) => option.selected
+            ).foodServingSizeGramValue;
+
+            const updatedRow = await updateFoodNutrients(
+              rowToUpdate,
+              servingSizeGramValue,
+              value
+            );
+            console.log(updatedRow);
+            updateGroupedRows(updatedRow);
+            if (changeType === "blur") {
+              await updateFoodEntryDB({ ...updatedRow, foodServingQty: value });
+            }
+          } catch (error) {
+            console.error("Error updating food nutrients:", error);
+          }
         }
-      } catch (error) {
-        console.error("Error updating food quantity in database: ", error);
-      }
+      );
+      debouncedRequest(value, rowToUpdate, changeType);
     }
 
     if (fieldToUpdate == "servingSizeDisplay") {
@@ -539,7 +528,7 @@ export default function FoodDiary({ foodDate, key }) {
 
   return (
     <>
-      <h1>Food Diary</h1>
+      <h1>Testing</h1>
       <Table
         columns={columns}
         groupedRows={rows}
