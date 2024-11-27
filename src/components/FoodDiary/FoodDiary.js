@@ -1,17 +1,15 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo, useContext } from "react";
 import Table from "../Table/Table";
 import dayjs from "dayjs";
-import {
-  inputs,
-  fetchNutrients,
-  fetchServingSizeOptions,
-} from "../../api/FDCApi";
+import { fetchNutrients, fetchServingSizeOptions } from "../../api/FDCApi";
 import {
   deleteFoodEntryById,
   fetchFoodEntryByDate,
   updateFoodEntry,
 } from "../../api/EngineApi";
+import nutrition from "../../constants/nutrition.json";
 import { debounce } from "lodash";
+import { AuthContext } from "../../context/AuthContext";
 
 // Also used by nutritiondisplay to calculate
 export const calculateFoodNutrients = (
@@ -21,44 +19,111 @@ export const calculateFoodNutrients = (
 ) => {
   const foodNutrients = nutrients.map((nutrient) => ({
     name: nutrient.name,
-    amount:
-      Number.parseFloat(
-        ((nutrient.amount * servingSizeGramValue) / 100) * servingQty
-      ).toFixed(2) + nutrient.unit,
+    amount: Number.parseFloat(
+      ((nutrient.amount * servingSizeGramValue) / 100) * servingQty
+    ).toFixed(2),
   }));
   return foodNutrients;
 };
 
 export default function FoodDiary({ foodDate, key }) {
+  foodDate = dayjs(foodDate).format("YYYY-MM-DD");
+  const { decodedToken } = useContext(AuthContext);
+  const keycloakId = decodedToken.sub;
+  const age = decodedToken.age;
+
+  const { nutritionUnits, recommendedByAgeGroup } = nutrition;
+  const recommendedNutrients = recommendedByAgeGroup[age];
+
   // add a type in column to put as dropdown, or input field
   const columns = [
     { label: "Food Name", field: "foodName" },
     { label: "Serving", field: "foodServingQty", type: "input" },
     { label: "Serving Size", field: "servingSizeDisplay", type: "select" },
-    { label: "Energy", field: "energy" },
-    { label: "Fat", field: "fat" },
-    { label: "Cholesterol", field: "cholesterol" },
-    { label: "Sodium", field: "sodium" },
-    { label: "Carbohydrate", field: "carbohydrate" },
-    { label: "Protein", field: "protein" },
+    {
+      label: `Energy, ${
+        nutritionUnits.find((nutrient) => nutrient.name === "Energy")?.unit
+      }`,
+      field: "energy",
+    },
+    {
+      label: `Fat, ${
+        nutritionUnits.find((nutrient) => nutrient.name === "Total Fat")?.unit
+      }`,
+      field: "fat",
+    },
+    {
+      label: `Cholesterol, ${
+        nutritionUnits.find((nutrient) => nutrient.name === "Cholesterol")?.unit
+      }`,
+      field: "cholesterol",
+    },
+    {
+      label: `Sodium, ${
+        nutritionUnits.find((nutrient) => nutrient.name === "Sodium")?.unit
+      }`,
+      field: "sodium",
+    },
+    {
+      label: `Carbohydrate, ${
+        nutritionUnits.find(
+          (nutrient) => nutrient.name === "Total Carbohydrate"
+        )?.unit
+      }`,
+      field: "carbohydrate",
+    },
+    {
+      label: `Protein, ${
+        nutritionUnits.find((nutrient) => nutrient.name === "Protein")?.unit
+      }`,
+      field: "protein",
+    },
   ];
 
   const totalColumns = [
     { label: "", field: "text" },
-    { label: "Energy", field: "energy" },
-    { label: "Fat", field: "fat" },
-    { label: "Cholesterol", field: "cholesterol" },
-    { label: "Sodium", field: "sodium" },
-    { label: "Carbohydrate", field: "carbohydrate" },
-    { label: "Protein", field: "protein" },
+    {
+      label: `Energy, ${
+        nutritionUnits.find((nutrient) => nutrient.name === "Energy")?.unit
+      }`,
+      field: "energy",
+    },
+    {
+      label: `Fat, ${
+        nutritionUnits.find((nutrient) => nutrient.name === "Total Fat")?.unit
+      }`,
+      field: "fat",
+    },
+    {
+      label: `Cholesterol, ${
+        nutritionUnits.find((nutrient) => nutrient.name === "Cholesterol")?.unit
+      }`,
+      field: "cholesterol",
+    },
+    {
+      label: `Sodium, ${
+        nutritionUnits.find((nutrient) => nutrient.name === "Sodium")?.unit
+      }`,
+      field: "sodium",
+    },
+    {
+      label: `Carbohydrate, ${
+        nutritionUnits.find(
+          (nutrient) => nutrient.name === "Total Carbohydrate"
+        )?.unit
+      }`,
+      field: "carbohydrate",
+    },
+    {
+      label: `Protein, ${
+        nutritionUnits.find((nutrient) => nutrient.name === "Protein")?.unit
+      }`,
+      field: "protein",
+    },
   ];
-
-  foodDate = dayjs(foodDate).format("YYYY-MM-DD");
 
   const [rows, setRows] = useState();
   const [totalRows, setTotalRows] = useState();
-
-  const keycloakId = localStorage.getItem("keycloakId");
 
   // HELPER FUNCTIONS
   // Calculate the nutrient amounts based on serving size * serving qty
@@ -111,7 +176,6 @@ export default function FoodDiary({ foodDate, key }) {
     }
   };
 
-  // function to update groupedrows with an updated row
   const updateGroupedRows = (updatedRow) => {
     setRows((prevRows) => {
       return prevRows.map((mealGroup) => {
@@ -176,23 +240,29 @@ export default function FoodDiary({ foodDate, key }) {
   const calculateRemaining = (totals) => {
     const remaining = {
       energy:
-        inputs.find((input) => input.name === "Energy")?.recommendedAmt -
-        totals.energy,
+        recommendedNutrients.find(
+          (recommended) => recommended.name === "Energy"
+        )?.recommendedAmt - totals.energy,
       fat:
-        inputs.find((input) => input.name === "Total Fat")?.recommendedAmt -
-        totals.fat,
+        recommendedNutrients.find(
+          (recommended) => recommended.name === "Total Fat"
+        )?.recommendedAmt - totals.fat,
       cholesterol:
-        inputs.find((input) => input.name === "Cholesterol")?.recommendedAmt -
-        totals.cholesterol,
+        recommendedNutrients.find(
+          (recommended) => recommended.name === "Cholesterol"
+        )?.recommendedAmt - totals.cholesterol,
       sodium:
-        inputs.find((input) => input.name === "Sodium")?.recommendedAmt -
-        totals.sodium,
+        recommendedNutrients.find(
+          (recommended) => recommended.name === "Sodium"
+        )?.recommendedAmt - totals.sodium,
       carbohydrate:
-        inputs.find((input) => input.name === "Total Carbohydrate")
-          ?.recommendedAmt - totals.carbohydrate,
+        recommendedNutrients.find(
+          (recommended) => recommended.name === "Total Carbohydrate"
+        )?.recommendedAmt - totals.carbohydrate,
       protein:
-        inputs.find((input) => input.name === "Protein")?.recommendedAmt -
-        totals.protein,
+        recommendedNutrients.find(
+          (recommended) => recommended.name === "Protein"
+        )?.recommendedAmt - totals.protein,
     };
     for (let key in remaining) {
       remaining[key] = parseFloat(remaining[key].toFixed(2));
@@ -203,7 +273,7 @@ export default function FoodDiary({ foodDate, key }) {
   // MAIN FUNCTION
   const updateFoodEntryByDate = async () => {
     try {
-      const response = await fetchFoodEntryByDate(foodDate);
+      const response = await fetchFoodEntryByDate(foodDate, keycloakId);
       const updatedRows = await Promise.all(
         response.data.map(async (food) => {
           // Fetch nutrients for the current food item
@@ -279,7 +349,7 @@ export default function FoodDiary({ foodDate, key }) {
     if (foodDate !== null) {
       updateFoodEntryByDate();
     }
-  }, [foodDate]);
+  }, [foodDate, key]);
 
   // update food entries when other thing changes besides date
   useEffect(() => {
@@ -290,85 +360,46 @@ export default function FoodDiary({ foodDate, key }) {
       setTotalRows([
         {
           text: "Total",
-          energy:
-            totals.energy +
-            inputs.find((input) => input.name === "Energy").unit,
-          fat:
-            totals.fat +
-            inputs.find((input) => input.name === "Total Fat").unit,
-          cholesterol:
-            totals.cholesterol +
-            inputs.find((input) => input.name === "Cholesterol").unit,
-          sodium:
-            totals.sodium +
-            inputs.find((input) => input.name === "Sodium").unit,
-          carbohydrate:
-            totals.carbohydrate +
-            inputs.find((input) => input.name === "Total Carbohydrate").unit,
-          protein:
-            totals.protein +
-            inputs.find((input) => input.name === "Protein").unit,
+          energy: totals.energy,
+          fat: totals.fat,
+          cholesterol: totals.cholesterol,
+          sodium: totals.sodium,
+          carbohydrate: totals.carbohydrate,
+          protein: totals.protein,
         },
         {
           text: "Goal",
-          energy:
-            (totals.energy + remaining.energy).toFixed(2) +
-            inputs.find((input) => input.name === "Energy").unit,
-          fat:
-            (totals.fat + remaining.fat).toFixed(2) +
-            inputs.find((input) => input.name === "Total Fat").unit,
-          cholesterol:
-            (totals.cholesterol + remaining.cholesterol).toFixed(2) +
-            inputs.find((input) => input.name === "Cholesterol").unit,
-          sodium:
-            (totals.sodium + remaining.sodium).toFixed(2) +
-            inputs.find((input) => input.name === "Sodium").unit,
-          carbohydrate:
-            (totals.carbohydrate + remaining.carbohydrate).toFixed(2) +
-            inputs.find((input) => input.name === "Total Carbohydrate").unit,
-          protein:
-            (totals.protein + remaining.protein).toFixed(2) +
-            inputs.find((input) => input.name === "Protein").unit,
+          energy: (totals.energy + remaining.energy).toFixed(2),
+          fat: (totals.fat + remaining.fat).toFixed(2),
+          cholesterol: (totals.cholesterol + remaining.cholesterol).toFixed(2),
+          sodium: (totals.sodium + remaining.sodium).toFixed(2),
+          carbohydrate: (totals.carbohydrate + remaining.carbohydrate).toFixed(
+            2
+          ),
+          protein: (totals.protein + remaining.protein).toFixed(2),
         },
         {
           text: "Remaining",
-          energy:
-            remaining.energy +
-            inputs.find((input) => input.name === "Energy").unit,
-          fat:
-            remaining.fat +
-            inputs.find((input) => input.name === "Total Fat").unit,
-          cholesterol:
-            remaining.cholesterol +
-            inputs.find((input) => input.name === "Cholesterol").unit,
-          sodium:
-            remaining.sodium +
-            inputs.find((input) => input.name === "Sodium").unit,
-          carbohydrate:
-            remaining.carbohydrate +
-            inputs.find((input) => input.name === "Total Carbohydrate").unit,
-          protein:
-            remaining.protein +
-            inputs.find((input) => input.name === "Protein").unit,
+          energy: remaining.energy,
+          fat: remaining.fat,
+          cholesterol: remaining.cholesterol,
+          sodium: remaining.sodium,
+          carbohydrate: remaining.carbohydrate,
+          protein: remaining.protein,
         },
       ]);
     }
-  }, [rows]);
+  }, [rows, decodedToken]);
 
   // EVENT HANDLERS
   const handleDelete = (rowToDeleteId) => {
-    // Update row display
     setRows((prevRows) => {
       return prevRows.map((mealGroup) => {
-        // meal here refers to breakfast/lunch/dinner
         const [meal, ...rowsForMeal] = mealGroup;
-
         // Search for the row and update the display if true
         const updatedRowsForMeal = rowsForMeal.filter(
           (row) => row.id !== rowToDeleteId
         );
-
-        // Return the updated meal group
         return [meal, ...updatedRowsForMeal];
       });
     });
@@ -433,10 +464,9 @@ export default function FoodDiary({ foodDate, key }) {
     changeType
   ) => {
     if (fieldToUpdate == "foodServingQty") {
-      // update row with the changed serving size qty (before nutrients)
+      // update row with the changed serving size qty (without updating the nutrient display)
       setRows((prevRows) => {
         return prevRows.map((mealGroup) => {
-          // meal here refers to breakfast/lunch/dinner
           const [meal, ...rowsForMeal] = mealGroup;
           const updatedRowsForMeal = rowsForMeal.map((row) => {
             if (row.id === rowToUpdate.id) {
@@ -486,7 +516,6 @@ export default function FoodDiary({ foodDate, key }) {
 
           // calculate the updated nutrient display
           const updatedRow = await updateFoodNutrients(
-            // updated row with new serving size display
             {
               ...rowToUpdate,
               servingSizeDisplay: updatedServingSizeDisplay,
@@ -495,10 +524,8 @@ export default function FoodDiary({ foodDate, key }) {
             rowToUpdate.foodServingQty
           );
 
-          // Update row display
+          // Update row display and database
           updateGroupedRows(updatedRow);
-
-          // Update database
           await updateFoodEntryDB({ ...updatedRow, ...updatedFields });
         } catch (error) {
           console.error(
@@ -512,7 +539,7 @@ export default function FoodDiary({ foodDate, key }) {
 
   return (
     <>
-      <h1>Testing</h1>
+      <h1>Food Diary</h1>
       <Table
         columns={columns}
         groupedRows={rows}

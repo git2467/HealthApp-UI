@@ -1,0 +1,77 @@
+{
+  "nutritionUnits": [
+    { "name": "Energy", "id": 1008, "unit": "kcal" },
+    { "name": "Total Fat", "id": 1004,  "unit": "g" },
+    { "name": "Cholesterol", "id": 1253, "unit": "mg" },
+    { "name": "Sodium", "id": 1093, "unit": "mg" },
+    { "name": "Total Carbohydrate", "id": 1005, "unit": "g" },
+    { "name": "Protein", "id": 1003, "unit": "g" }
+  ],
+
+  "recommendedDefault": [
+    { "name": "Energy", "id": 1008, "recommendedAmt": 2500 },
+    { "name": "Total Fat", "id": 1004, "recommendedAmt": 76 },
+    { "name": "Cholesterol", "id": 1253, "recommendedAmt": 300},
+    { "name": "Sodium", "id": 1093, "recommendedAmt": 2300 },
+    { "name": "Total Carbohydrate", "id": 1005, "recommendedAmt": 344 },
+    { "name": "Protein", "id": 1003, "recommendedAmt": 141}
+  ],
+  "recommendedByAgeGroup": {
+  "1-3": [
+    { "name": "Energy", "id": 1008, "recommendedAmt": 1000 },
+    { "name": "Total Fat", "id": 1004, "recommendedAmt": 39 },
+    { "name": "Cholesterol", "id": 1253, "recommendedAmt": 300},
+    { "name": "Sodium", "id": 1093, "recommendedAmt": 1500 },
+    { "name": "Total Carbohydrate", "id": 1005, "recommendedAmt": 138 },
+    { "name": "Protein", "id": 1003, "recommendedAmt": 31}
+  ],
+  "4-8": [
+    { "name": "Energy", "id": 1008, "recommendedAmt": 1400 },
+    { "name": "Total Fat", "id": 1004, "recommendedAmt": 47 },
+    { "name": "Cholesterol", "id": 1253, "recommendedAmt": 300},
+    { "name": "Sodium", "id": 1093, "recommendedAmt": 1900 },
+    { "name": "Total Carbohydrate", "id": 1005, "recommendedAmt": 193 },
+    { "name": "Protein", "id": 1003, "recommendedAmt": 70}
+  ],
+  "9-13": [
+    { "name": "Energy", "id": 1008, "recommendedAmt": 1700 },
+    { "name": "Total Fat", "id": 1004, "recommendedAmt": 57 },
+    { "name": "Cholesterol", "id": 1253, "recommendedAmt": 300},
+    { "name": "Sodium", "id": 1093, "recommendedAmt": 2200 },
+    { "name": "Total Carbohydrate", "id": 1005, "recommendedAmt": 234 },
+    { "name": "Protein", "id": 1003, "recommendedAmt": 85}
+  ],
+  "14-18": [
+    { "name": "Energy", "id": 1008, "recommendedAmt": 2500 },
+    { "name": "Total Fat", "id": 1004, "recommendedAmt": 83 },
+    { "name": "Cholesterol", "id": 1253, "recommendedAmt": 300},
+    { "name": "Sodium", "id": 1093, "recommendedAmt": 2300 },
+    { "name": "Total Carbohydrate", "id": 1005, "recommendedAmt": 344 },
+    { "name": "Protein", "id": 1003, "recommendedAmt": 125}
+  ],
+  "19-30": [
+    { "name": "Energy", "id": 1008, "recommendedAmt": 2500 },
+    { "name": "Total Fat", "id": 1004, "recommendedAmt": 76 },
+    { "name": "Cholesterol", "id": 1253, "recommendedAmt": 300},
+    { "name": "Sodium", "id": 1093, "recommendedAmt": 2300 },
+    { "name": "Total Carbohydrate", "id": 1005, "recommendedAmt": 344 },
+    { "name": "Protein", "id": 1003, "recommendedAmt": 141}
+  ],
+  "31-50": [
+    { "name": "Energy", "id": 1008, "recommendedAmt": 2000 },
+    { "name": "Total Fat", "id": 1004, "recommendedAmt": 61 },
+    { "name": "Cholesterol", "id": 1253, "recommendedAmt": 300},
+    { "name": "Sodium", "id": 1093, "recommendedAmt": 2300 },
+    { "name": "Total Carbohydrate", "id": 1005, "recommendedAmt": 275},
+    { "name": "Protein", "id": 1003, "recommendedAmt": 113}
+  ],
+  "51+": [
+    { "name": "Energy", "id": 1008, "recommendedAmt": 1800 },
+    { "name": "Total Fat", "id": 1004, "recommendedAmt": 55 },
+    { "name": "Cholesterol", "id": 1253, "recommendedAmt": 300},
+    { "name": "Sodium", "id": 1093, "recommendedAmt": 2300 },
+    { "name": "Total Carbohydrate", "id": 1005, "recommendedAmt": 248 },
+    { "name": "Protein", "id": 1003, "recommendedAmt": 101}
+  ]
+}
+}

@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
-import {
-  fetchNutrients,
-  fetchServingSizeOptions,
-  inputs,
-} from "../../api/FDCApi";
+import React, { useState, useEffect, useContext } from "react";
+import { fetchNutrients, fetchServingSizeOptions } from "../../api/FDCApi";
+
+import nutrition from "../../constants/nutrition.json";
+
 import { createFoodEntry } from "../../api/EngineApi";
 import { calculateFoodNutrients } from "../FoodDiary/FoodDiary";
 import Table from "../Table/Table";
@@ -22,13 +21,25 @@ import {
 } from "@mui/material";
 import dayjs from "dayjs";
 import DateSelector from "../DateSelector/DateSelector";
+import { AuthContext } from "../../context/AuthContext";
 
 export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
   const columns = [
-    { label: "Nutrient Name", field: "id" },
+    { label: "Nutrient Name", field: "displayName" },
     { label: "Amount", field: "amount" },
     { label: "%Daily Value", field: "dailyAmt" },
   ];
+
+  const { decodedToken, isLogin } = useContext(AuthContext);
+  const keycloakId = decodedToken?.sub ?? null;
+  const age = decodedToken?.age ?? null;
+
+  const { nutritionUnits, recommendedDefault, recommendedByAgeGroup } =
+    nutrition;
+  const recommendedNutrients = isLogin
+    ? recommendedByAgeGroup[age]
+    : recommendedDefault;
+
   const [rows, setRows] = useState([]);
   const [nutrients, setNutrients] = useState();
 
@@ -43,8 +54,6 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showSnackbar, setShowSnackbar] = useState(false);
 
-  const keycloakId = localStorage.getItem("keycloakId");
-
   // ------------ helper functions
   // get the numerical value "123" from the full display "123mg"
   function convertAmount(amountStr) {
@@ -57,19 +66,20 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
 
   function calculateDailyAmtValues(foodNutrients) {
     const dailyAmtValues = foodNutrients.map((nutrient) => {
-      const matchingInput = inputs.find(
-        (input) => nutrient.name === input.name
+      const matchedNutrient = recommendedNutrients.find(
+        (recommended) => nutrient.name === recommended.name
       );
       let dailyAmt = "";
-      if (matchingInput) {
+      if (matchedNutrient) {
         // Calculate nutrient's daily amount (percentage)
         dailyAmt = Number(
-          convertAmount(nutrient.amount) / matchingInput.recommendedAmt
+          convertAmount(nutrient.amount) / matchedNutrient.recommendedAmt
         ).toLocaleString(undefined, {
           style: "percent",
           minimumFractionDigits: 1,
         });
       }
+
       return {
         name: nutrient.name,
         dailyAmt: dailyAmt,
@@ -83,10 +93,10 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
     setRows((prevRows) =>
       prevRows.map((row) => {
         const updatedNutrient = foodNutrients.find(
-          (foodNutrient) => foodNutrient.name === row.id
+          (foodNutrient) => foodNutrient.name === row.name
         )?.amount;
         const updatedDailyAmt = dailyAmtValues.find(
-          (dailyAmt) => dailyAmt.name === row.id
+          (dailyAmt) => dailyAmt.name === row.name
         )?.dailyAmt;
 
         return {
@@ -129,7 +139,13 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
       // update rows display
       setRows(
         nutrients.map((nutrient) => ({
-          id: nutrient.name,
+          name: nutrient.name,
+          displayName:
+            nutrient.name +
+            ", " +
+            nutritionUnits.find(
+              (nutritionUnit) => nutritionUnit.name === nutrient.name
+            )?.unit,
           amount:
             foodNutrients.find(
               (foodNutrient) => foodNutrient.name === nutrient.name
@@ -245,7 +261,7 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
     if (rows.length !== 0) {
       updateNutritionDisplay();
     }
-  }, [foodServingQty, selectedServingSize]);
+  }, [foodServingQty, selectedServingSize, decodedToken]);
 
   return (
     <Box sx={{ padding: 3 }}>

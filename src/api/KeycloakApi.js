@@ -1,6 +1,16 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
+export const getCookie = (cookieType) => {
+  const cookies = document.cookie.split("; ");
+  const cookie = cookies.find((cookie) => cookie.startsWith(cookieType + "="));
+  return cookie ? cookie.split("=")[1] : null;
+};
+
+const removeCookie = (cookieType) => {
+  document.cookie = `${cookieType}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
+};
+
 const fdcAxiosInstance = axios.create({
   baseURL: "https://api.nal.usda.gov/fdc/v1",
   params: {
@@ -29,7 +39,7 @@ engineAxiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response && error.response.status === 401) {
-      if (!localStorage.getItem("refreshToken")) {
+      if (!getCookie("accessToken")) {
         await logout();
         return Promise.reject(error);
       } else {
@@ -61,17 +71,14 @@ export const login = async (code) => {
 
     const accessToken = response.data.access_token;
     const refreshToken = response.data.refresh_token;
-    localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem("refreshToken", refreshToken);
+    document.cookie = `accessToken=${accessToken}; path=/; Secure; SameSite=Strict; max-age=86400;`;
+    document.cookie = `refreshToken=${refreshToken}; path=/; Secure; SameSite=Strict; max-age=86400;`;
 
     const decodedToken = jwtDecode(accessToken);
-    const keycloakId = decodedToken.sub;
-    const keycloakUsername = decodedToken.preferred_username;
-    localStorage.setItem("keycloakId", keycloakId);
-    localStorage.setItem("keycloakUsername", keycloakUsername);
 
     setTokenInAxios(accessToken);
     console.log("Logged in successfully.");
+    return decodedToken;
   } catch (error) {
     console.error("Error logging in: ", error);
     throw error;
@@ -80,7 +87,7 @@ export const login = async (code) => {
 
 export const refreshToken = async () => {
   try {
-    const refreshToken = localStorage.getItem("refreshToken");
+    const refreshToken = getCookie("refreshToken");
 
     if (!refreshToken) {
       console.error(
@@ -107,16 +114,10 @@ export const refreshToken = async () => {
 
     const newAccessToken = response.data.access_token;
     const newRefreshToken = response.data.refresh_token;
-
-    localStorage.setItem("accessToken", newAccessToken);
-    localStorage.setItem("refreshToken", newRefreshToken);
-
-    const decodedToken = jwtDecode(newAccessToken);
-    const keycloakId = decodedToken.sub;
-    localStorage.setItem("keycloakId", keycloakId);
+    document.cookie = `accessToken=${newAccessToken}; path=/; Secure; SameSite=Strict; max-age=86400;`;
+    document.cookie = `refreshToken=${newRefreshToken}; path=/; Secure; SameSite=Strict; max-age=86400;`;
 
     setTokenInAxios(newAccessToken);
-    console.log("Obtained new access token successfully.");
   } catch (error) {
     console.error("Error refreshing token: ", error);
     throw error;
@@ -125,7 +126,7 @@ export const refreshToken = async () => {
 
 export const logout = async () => {
   try {
-    const refreshToken = localStorage.getItem("refreshToken");
+    const refreshToken = getCookie("refreshToken");
 
     if (!refreshToken) {
       console.error("No refresh token found while attempting to logout.");
@@ -147,11 +148,35 @@ export const logout = async () => {
       }
     );
 
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("keycloakId");
+    removeCookie("accessToken");
+    removeCookie("refreshToken");
+
     console.log("Logged out successfully.");
   } catch (error) {
     console.error("Error logging out:", error);
+  }
+};
+
+export const updateAge = async (age) => {
+  try {
+    const accessToken = getCookie("accessToken");
+    const decodedToken = jwtDecode(accessToken);
+    const keycloakId = decodedToken.sub;
+
+    const updatedAge = {
+      attributes: {
+        age: [`${age}`],
+      },
+    };
+
+    await axios.put(`/admin/realms/healthapp/users/${keycloakId}`, updatedAge, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  } catch (error) {
+    console.error("Error updating age: ", error);
+    throw error;
   }
 };
