@@ -17,7 +17,6 @@ const MainContainer = () => {
   // refresh key is to for nutrition display to let food diary know that there's a new food entry
   const [refreshKey, setRefreshKey] = useState(0);
   const [code, setCode] = useState("");
-  const [username, setUsername] = useState("");
 
   const handleSelectedRow = (row) => {
     setSelectedFood(row);

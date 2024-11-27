@@ -25,7 +25,7 @@ import { AuthContext } from "../../context/AuthContext";
 
 export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
   const columns = [
-    { label: "Nutrient Name", field: "id" },
+    { label: "Nutrient Name", field: "displayName" },
     { label: "Amount", field: "amount" },
     { label: "%Daily Value", field: "dailyAmt" },
   ];
@@ -66,8 +66,6 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
 
   function calculateDailyAmtValues(foodNutrients) {
     const dailyAmtValues = foodNutrients.map((nutrient) => {
-      // recommended based on user age group
-
       const matchedNutrient = recommendedNutrients.find(
         (recommended) => nutrient.name === recommended.name
       );
@@ -95,10 +93,10 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
     setRows((prevRows) =>
       prevRows.map((row) => {
         const updatedNutrient = foodNutrients.find(
-          (foodNutrient) => foodNutrient.name === row.id
+          (foodNutrient) => foodNutrient.name === row.name
         )?.amount;
         const updatedDailyAmt = dailyAmtValues.find(
-          (dailyAmt) => dailyAmt.name === row.id
+          (dailyAmt) => dailyAmt.name === row.name
         )?.dailyAmt;
 
         return {
@@ -141,7 +139,8 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
       // update rows display
       setRows(
         nutrients.map((nutrient) => ({
-          id:
+          name: nutrient.name,
+          displayName:
             nutrient.name +
             ", " +
             nutritionUnits.find(
@@ -262,7 +261,7 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
     if (rows.length !== 0) {
       updateNutritionDisplay();
     }
-  }, [foodServingQty, selectedServingSize]);
+  }, [foodServingQty, selectedServingSize, decodedToken]);
 
   return (
     <Box sx={{ padding: 3 }}>

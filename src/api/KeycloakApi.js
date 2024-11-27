@@ -118,7 +118,6 @@ export const refreshToken = async () => {
     document.cookie = `refreshToken=${newRefreshToken}; path=/; Secure; SameSite=Strict; max-age=86400;`;
 
     setTokenInAxios(newAccessToken);
-    console.log("Obtained new access token successfully.");
   } catch (error) {
     console.error("Error refreshing token: ", error);
     throw error;
@@ -155,5 +154,29 @@ export const logout = async () => {
     console.log("Logged out successfully.");
   } catch (error) {
     console.error("Error logging out:", error);
+  }
+};
+
+export const updateAge = async (age) => {
+  try {
+    const accessToken = getCookie("accessToken");
+    const decodedToken = jwtDecode(accessToken);
+    const keycloakId = decodedToken.sub;
+
+    const updatedAge = {
+      attributes: {
+        age: [`${age}`],
+      },
+    };
+
+    await axios.put(`/admin/realms/healthapp/users/${keycloakId}`, updatedAge, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  } catch (error) {
+    console.error("Error updating age: ", error);
+    throw error;
   }
 };

@@ -12,7 +12,7 @@ export default function Search({ onRowSelected }) {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
-  const [count, setCount] = useState([]);
+  const [count, setCount] = useState();
   const [page, setPage] = useState(1);
   const [rows, setRows] = useState([]);
 

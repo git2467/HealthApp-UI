@@ -1,11 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo, useContext } from "react";
 import Table from "../Table/Table";
 import dayjs from "dayjs";
-import {
-  inputs,
-  fetchNutrients,
-  fetchServingSizeOptions,
-} from "../../api/FDCApi";
+import { fetchNutrients, fetchServingSizeOptions } from "../../api/FDCApi";
 import {
   deleteFoodEntryById,
   fetchFoodEntryByDate,
@@ -31,6 +27,7 @@ export const calculateFoodNutrients = (
 };
 
 export default function FoodDiary({ foodDate, key }) {
+  foodDate = dayjs(foodDate).format("YYYY-MM-DD");
   const { decodedToken } = useContext(AuthContext);
   const keycloakId = decodedToken.sub;
   const age = decodedToken.age;
@@ -125,8 +122,6 @@ export default function FoodDiary({ foodDate, key }) {
     },
   ];
 
-  foodDate = dayjs(foodDate).format("YYYY-MM-DD");
-
   const [rows, setRows] = useState();
   const [totalRows, setTotalRows] = useState();
 
@@ -181,7 +176,6 @@ export default function FoodDiary({ foodDate, key }) {
     }
   };
 
-  // function to update groupedrows with an updated row
   const updateGroupedRows = (updatedRow) => {
     setRows((prevRows) => {
       return prevRows.map((mealGroup) => {
@@ -279,7 +273,6 @@ export default function FoodDiary({ foodDate, key }) {
   // MAIN FUNCTION
   const updateFoodEntryByDate = async () => {
     try {
-      console.log(decodedToken);
       const response = await fetchFoodEntryByDate(foodDate, keycloakId);
       const updatedRows = await Promise.all(
         response.data.map(async (food) => {
@@ -292,7 +285,6 @@ export default function FoodDiary({ foodDate, key }) {
             food.foodServingSizeGramValue,
             food.foodServingQty
           );
-          console.log(foodNutrients);
 
           // fetch serving size options for the current fooditem
           const servingSizeOptions = await fetchServingSizeOptions(
@@ -344,7 +336,6 @@ export default function FoodDiary({ foodDate, key }) {
         );
         return [meal, ...rowsForMeal];
       });
-      console.log(groupedRows);
 
       // Set rows after all nutrient data has been fetched and processed
       setRows(groupedRows);
@@ -398,22 +389,17 @@ export default function FoodDiary({ foodDate, key }) {
         },
       ]);
     }
-  }, [rows]);
+  }, [rows, decodedToken]);
 
   // EVENT HANDLERS
   const handleDelete = (rowToDeleteId) => {
-    // Update row display
     setRows((prevRows) => {
       return prevRows.map((mealGroup) => {
-        // meal here refers to breakfast/lunch/dinner
         const [meal, ...rowsForMeal] = mealGroup;
-
         // Search for the row and update the display if true
         const updatedRowsForMeal = rowsForMeal.filter(
           (row) => row.id !== rowToDeleteId
         );
-
-        // Return the updated meal group
         return [meal, ...updatedRowsForMeal];
       });
     });
@@ -478,10 +464,9 @@ export default function FoodDiary({ foodDate, key }) {
     changeType
   ) => {
     if (fieldToUpdate == "foodServingQty") {
-      // update row with the changed serving size qty (before nutrients)
+      // update row with the changed serving size qty (without updating the nutrient display)
       setRows((prevRows) => {
         return prevRows.map((mealGroup) => {
-          // meal here refers to breakfast/lunch/dinner
           const [meal, ...rowsForMeal] = mealGroup;
           const updatedRowsForMeal = rowsForMeal.map((row) => {
             if (row.id === rowToUpdate.id) {
@@ -531,7 +516,6 @@ export default function FoodDiary({ foodDate, key }) {
 
           // calculate the updated nutrient display
           const updatedRow = await updateFoodNutrients(
-            // updated row with new serving size display
             {
               ...rowToUpdate,
               servingSizeDisplay: updatedServingSizeDisplay,
@@ -540,10 +524,8 @@ export default function FoodDiary({ foodDate, key }) {
             rowToUpdate.foodServingQty
           );
 
-          // Update row display
+          // Update row display and database
           updateGroupedRows(updatedRow);
-
-          // Update database
           await updateFoodEntryDB({ ...updatedRow, ...updatedFields });
         } catch (error) {
           console.error(
@@ -557,7 +539,7 @@ export default function FoodDiary({ foodDate, key }) {
 
   return (
     <>
-      <h1>Testing</h1>
+      <h1>Food Diary</h1>
       <Table
         columns={columns}
         groupedRows={rows}
