@@ -1,0 +1,24 @@
+@use "../variables.scss" as *; 
+
+.header-select {
+    background-color: $primary-color;
+    border: 2px solid white;
+    padding: 0px !important;
+    width: 90px;
+    height: 40px;
+}
+
+.header-select .MuiSelect-select {
+    padding: 5px;
+    border-radius: 0;
+    color: white;
+}
+
+.header-select fieldset {
+    border: none;
+}
+
+.header-select svg {
+    color: white;
+}
+

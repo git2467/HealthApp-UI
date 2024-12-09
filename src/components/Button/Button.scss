@@ -1,0 +1,6 @@
+@use "../variables.scss" as *; 
+
+.primary-button {
+    background-color: $color-4 !important;
+    color:white;
+}

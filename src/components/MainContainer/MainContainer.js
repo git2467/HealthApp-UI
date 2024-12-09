@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import dayjs from "dayjs";
-import Header from "../Header";
+import Header from "../Header/Header";
 import Search from "../Search/Search";
 import "./MainContainer.scss";
 import NutritionDisplay from "../NutritionDisplay/NutritionDisplay";
