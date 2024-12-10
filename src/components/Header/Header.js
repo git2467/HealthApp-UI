@@ -74,9 +74,11 @@ const Header = () => {
 
   return (
     <header>
-      <h1>Food Diary</h1>
+      <div className="header-left">
+        <h1>Food Diary</h1>
+      </div>
       {isLogin && (
-        <div class="header-center">
+        <div className="header-center">
           <p>I am </p>
           <Select
             className="header-select"
@@ -96,23 +98,21 @@ const Header = () => {
       <div class="header-right">
         {isLogin ? (
           //after login aka isLogin == true
-          <div class="login-true">
+          <div className="logout-wrapper">
             <p>Welcome, {decodedToken.preferred_username}!</p>
-            <div className="logout-wrapper">
-              <Button
-                className="secondary-button logout-button"
-                disabled={!isLogin}
-                onClick={() => handleLogout()}
-              >
-                Logout
-              </Button>
-            </div>
+            <Button
+              className="secondary-button logout-button"
+              disabled={!isLogin}
+              onClick={() => handleLogout()}
+            >
+              Logout
+            </Button>
           </div>
         ) : (
           //before login aka isLogin == false
           <div className="login-wrapper">
             <Button
-              className="primary-button"
+              className="primary-button login-button"
               disabled={isLogin}
               onClick={() => handleLogin()}
             >
