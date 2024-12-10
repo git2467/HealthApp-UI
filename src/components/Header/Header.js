@@ -100,7 +100,7 @@ const Header = () => {
             <p>Welcome, {decodedToken.preferred_username}!</p>
             <div className="logout-wrapper">
               <Button
-                class="primary-button"
+                className="secondary-button logout-button"
                 disabled={!isLogin}
                 onClick={() => handleLogout()}
               >
@@ -111,7 +111,11 @@ const Header = () => {
         ) : (
           //before login aka isLogin == false
           <div className="login-wrapper">
-            <Button disabled={isLogin} onClick={() => handleLogin()}>
+            <Button
+              className="primary-button"
+              disabled={isLogin}
+              onClick={() => handleLogin()}
+            >
               Login
             </Button>
           </div>
