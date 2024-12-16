@@ -1,10 +1,18 @@
 import { Button } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
-import { logout, refreshToken, updateAge, getCookie } from "../api/KeycloakApi";
-import { AuthContext } from "../context/AuthContext";
+import {
+  logout,
+  refreshToken,
+  updateAge,
+  getCookie,
+} from "../../api/KeycloakApi";
+import { AuthContext } from "../../context/AuthContext";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
+import "./Header.scss";
+import "../Button/Button.scss";
+import "../Select/Select.scss";
 
 const Header = () => {
   const { decodedToken, setDecodedToken, isLogin, setIsLogin } =
@@ -66,41 +74,53 @@ const Header = () => {
 
   return (
     <header>
-      <h1>Food Diary</h1>
+      <div className="header-left">
+        <h1>Food Diary</h1>
+      </div>
       {isLogin && (
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={selectedAge || ""}
-          label="Age"
-          onChange={handleChange}
-        >
-          {options.map((option, index) => (
-            <MenuItem key={index} value={option.value}>
-              {option.label}
-            </MenuItem>
-          ))}
-        </Select>
+        <div className="header-center">
+          <p>I am </p>
+          <Select
+            className="header-select"
+            value={selectedAge || ""}
+            label="Age"
+            onChange={handleChange}
+          >
+            {options.map((option, index) => (
+              <MenuItem key={index} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </Select>
+          <p> years old</p>
+        </div>
       )}
-
-      {isLogin ? (
-        //after login aka isLogin == true
-        <div>
-          <p>Welcome, {decodedToken.preferred_username}!</p>
+      <div class="header-right">
+        {isLogin ? (
+          //after login aka isLogin == true
           <div className="logout-wrapper">
-            <Button disabled={!isLogin} onClick={() => handleLogout()}>
+            <p>Welcome, {decodedToken.preferred_username}!</p>
+            <Button
+              className="secondary-button logout-button"
+              disabled={!isLogin}
+              onClick={() => handleLogout()}
+            >
               Logout
             </Button>
           </div>
-        </div>
-      ) : (
-        //before login aka isLogin == false
-        <div className="login-wrapper">
-          <Button disabled={isLogin} onClick={() => handleLogin()}>
-            Login
-          </Button>
-        </div>
-      )}
+        ) : (
+          //before login aka isLogin == false
+          <div className="login-wrapper">
+            <Button
+              className="primary-button login-button"
+              disabled={isLogin}
+              onClick={() => handleLogin()}
+            >
+              Login
+            </Button>
+          </div>
+        )}
+      </div>
     </header>
   );
 };

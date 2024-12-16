@@ -1,0 +1,25 @@
+@use "../Global.scss" as *;
+
+.primary-textfield.MuiTextField-root {
+  background-color: white;
+}
+
+.primary-textfield fieldset {
+  border: 1px solid $primary-color;
+}
+
+.primary-textfield.MuiTextField-root:hover fieldset {
+  border: 2px solid $primary-color;
+}
+
+.primary-textfield.MuiTextField-root .Mui-focused {
+  color: $primary-color;
+}
+
+.primary-textfield.MuiTextField-root .Mui-focused fieldset {
+  border: 2px solid $primary-color;
+}
+
+.primary-textfield.MuiTextField-root .Mui-focused input {
+  color: black;
+}

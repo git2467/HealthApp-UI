@@ -528,7 +528,7 @@ export default function FoodDiary({ foodDate, key }) {
 
   return (
     <>
-      <h1>Testing</h1>
+      <h1>Food Diary</h1>
       <Table
         columns={columns}
         groupedRows={rows}

@@ -1,13 +1,20 @@
-.tableHead{
+@use "../Global.scss" as *;
+
+.tableContainer.MuiTableContainer-root {
+  border: 2px solid $color-1;
+  border-radius: 20px;
+  box-shadow: none;
+}
+
+.tableHead {
   .tableCell {
-    color: blue;
-    background-color: #F9FAFB;
+    color: $color-4;
+    background-color: $color-1;
     font-weight: bold;
   }
 }
 
 .tableRow {
-  background-color: white;
   cursor: default;
 
   &:hover {
@@ -17,4 +24,14 @@
   &.no-hover {
     cursor: default;
   }
+}
+
+.tableHead .MuiTableCell-root {
+  font-size: $font-size-md;
+}
+
+.tableRow .MuiTableCell-root {
+  font-size: $font-size-md;
+  border-bottom: none;
+  border-top: 1px solid $color-1;
 }
