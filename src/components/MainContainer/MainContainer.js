@@ -14,8 +14,8 @@ const MainContainer = () => {
   const { setDecodedToken, isLogin, setIsLogin } = useContext(AuthContext);
   const [selectedFood, setSelectedFood] = useState("");
   const [diaryDate, setDiaryDate] = useState(dayjs());
-  // refresh key is to for nutrition display to let food diary know that there's a new food entry
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [refreshKey, setRefreshKey] = useState(0); // refresh key is to for nutrition display to let food diary know that there's a new food entry
+
   const [code, setCode] = useState("");
 
   const handleSelectedRow = (row) => {
@@ -43,9 +43,6 @@ const MainContainer = () => {
           const response = await login(code);
           setDecodedToken(response);
           setIsLogin(true);
-          console.log(
-            "retrieving token from cookie..." + getCookie("accessToken")
-          );
         } catch (error) {
           console.error("Error in handleLogin:", error);
           setIsLogin(false);

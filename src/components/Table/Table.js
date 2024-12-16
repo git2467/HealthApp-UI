@@ -58,7 +58,11 @@ export default function Table({
 
   return (
     <>
-      <TableContainer component={Paper} sx={{ marginTop: 2 }}>
+      <TableContainer
+        className="tableContainer"
+        component={Paper}
+        sx={{ marginTop: 2 }}
+      >
         <MuiTable>
           <TableHead className="tableHead">
             <TableRow>
