@@ -23,7 +23,7 @@ export const fetchFoods = async (searchTerm, currentPage) => {
       sortBy: "dataType.keyword",
       sortOrder: "asc",
       pageNumber: currentPage,
-      pageSize: 10,
+      pageSize: 1000,
     });
     return response;
   } catch (error) {
