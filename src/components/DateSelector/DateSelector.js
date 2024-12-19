@@ -5,7 +5,10 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import { Button, Box } from "@mui/material";
 
+import "../Button/Button.scss";
+
 export default function DateSelector({ date, onDateChange, showNavButtons }) {
+  date = dayjs(date);
   const handleDateChange = (newDate) => {
     onDateChange(newDate);
   };
@@ -22,7 +25,11 @@ export default function DateSelector({ date, onDateChange, showNavButtons }) {
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Box display="flex" alignItems="center" gap={1}>
         {showNavButtons && (
-          <Button variant="outlined" onClick={decrementDate}>
+          <Button
+            className="iconButtons"
+            variant="outlined"
+            onClick={decrementDate}
+          >
             {"<"}
           </Button>
         )}
@@ -35,7 +42,11 @@ export default function DateSelector({ date, onDateChange, showNavButtons }) {
           onChange={handleDateChange}
         />
         {showNavButtons && (
-          <Button variant="outlined" onClick={incrementDate}>
+          <Button
+            className="iconButtons"
+            variant="outlined"
+            onClick={incrementDate}
+          >
             {">"}
           </Button>
         )}

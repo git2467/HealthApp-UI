@@ -1,8 +1,7 @@
 .mainContainer {
   display: flex;
   flex-direction: column;
-  // height: 100vh;
-  // temporarily remove later update
+  margin-bottom: 20px;
 
   .mainBody {
     display: flex;
@@ -16,5 +15,9 @@
   .mainNutritionDisplay {
     width: 50%;
   }
+}
+
+.foodDiaryContainer {
+  margin: 0 24px;
 }
 

@@ -1,0 +1,28 @@
+.dateSelectorContainer {
+    display: flex;
+    justify-content: center; 
+  }
+
+.foodDiaryHeader h1 {
+    margin-right: 10px;
+}
+
+
+.foodDiaryTableContainer {
+    margin: 0 50px;
+
+}
+
+.totalNutrientsContainer {
+    display: flex;
+    justify-content: flex-end;
+
+}
+
+.nutrientTableSpacer {
+    width: 100px;
+}
+
+.tableGroupedSelect {
+    background-color: white;
+}

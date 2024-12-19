@@ -5,7 +5,6 @@ import Search from "../Search/Search";
 import "./MainContainer.scss";
 import NutritionDisplay from "../NutritionDisplay/NutritionDisplay";
 import FoodDiary from "../FoodDiary/FoodDiary";
-import DateSelector from "../DateSelector/DateSelector";
 import { login, refreshToken, getCookie } from "../../api/KeycloakApi";
 import { jwtDecode } from "jwt-decode";
 import { AuthContext } from "../../context/AuthContext";
@@ -81,20 +80,19 @@ const MainContainer = () => {
           )}
         </div>
       </div>
-      {isLogin ? (
-        <>
-          <DateSelector
-            date={diaryDate}
+      <div className="foodDiaryContainer">
+        {isLogin ? (
+          <FoodDiary
+            foodDate={diaryDate}
+            key={refreshKey}
             onDateChange={handleDateChange}
-            showNavButtons={true}
           />
-          <FoodDiary foodDate={diaryDate} key={refreshKey} />
-        </>
-      ) : (
-        <>
-          <h1>Please sign in to use the Food Diary feature</h1>
-        </>
-      )}
+        ) : (
+          <>
+            <h1>Please sign in to use the Food Diary feature</h1>
+          </>
+        )}
+      </div>
     </div>
   );
 };
