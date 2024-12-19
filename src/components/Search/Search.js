@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { fetchFoods } from "../../api/FDCApi";
 import Table from "../Table/Table";
+import "./Search.scss";
 import "../TextField/TextField.scss";
 
 import { TextField, CircularProgress, Box } from "@mui/material";
@@ -49,19 +50,18 @@ export default function Search({ onRowSelected }) {
       <Box sx={{ padding: 3 }}>
         <h1>Search Food</h1>
         <TextField
-          className="primary-textfield"
+          className="primary-textfield search-textfield"
           label="Search"
           variant="outlined"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          sx={{ marginBottom: 2 }}
           fullWidth
         />
         {loading ? (
           <Box
             sx={{ display: "flex", justifyContent: "center", marginTop: 40 }}
           >
-            <CircularProgress />
+            <CircularProgress className="loadingIcon" />
           </Box>
         ) : (
           searchTerm && (

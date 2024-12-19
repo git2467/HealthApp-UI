@@ -1,20 +1,17 @@
 .mainContainer {
   display: flex;
   flex-direction: column;
-  // height: 100vh;
-  // temporarily remove later update
 
   .mainBody {
     display: flex;
     flex: 1;
   }
-  
+
   .mainSearch {
-    width: 50%;
+    width: 60%;
   }
-  
+
   .mainNutritionDisplay {
-    width: 50%;
+    width: 40%;
   }
 }
-

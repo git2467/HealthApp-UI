@@ -1,0 +1,73 @@
+@use "../Global.scss" as *;
+
+.nutrition-display-container {
+  display: flex;
+  flex-direction: column;
+  padding: 3;
+}
+
+.nutrition-display-inputs {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+}
+
+.nutrition-display-textfield {
+  flex-grow: 0;
+  width: 15%;
+  height: auto;
+}
+
+.serving-select {
+  flex-grow: 0;
+  width: auto;
+  height: auto;
+}
+
+.serving-select.MuiFormControl-root fieldset {
+  border: 1px solid $primary-color;
+}
+
+.serving-select.MuiFormControl-root:hover fieldset {
+  border: 2px solid $primary-color;
+}
+
+.serving-select.MuiFormControl-root .Mui-focused {
+  color: $primary-color;
+  outline: 2px solid $primary-color;
+}
+
+.serving-select.MuiFormControl-root .Mui-focused fieldset {
+  border: none;
+}
+
+.serving-select .MuiFormLabel-root.MuiInputLabel-root {
+  outline: none !important;
+  z-index: 1 !important;
+}
+
+.serving-select .MuiInputBase-root {
+  outline: none;
+}
+
+.serving-select .MuiFormLabel-root.MuiInputLabel-root.Mui-focused {
+  outline: none !important;
+  z-index: 1 !important;
+  background-color: white !important;
+}
+
+.serving-select .Mui-focused .MuiSelect-select {
+  color: black;
+}
+
+.add-to-diary-button {
+  white-space: nowrap;
+  align-items: stretch;
+}
+
+.add-to-diary-button.MuiButtonBase-root {
+}
+
+.add-to-diary-button:hover {
+  opacity: 0.8;
+}
