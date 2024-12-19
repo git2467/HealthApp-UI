@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
-import { fetchNutrients, fetchServingSizeOptions } from "../../api/FDCApi";
-
 import nutrition from "../../constants/nutrition.json";
-
+import { fetchNutrients, fetchServingSizeOptions } from "../../api/FDCApi";
 import { createFoodEntry } from "../../api/EngineApi";
 import { calculateFoodNutrients } from "../FoodDiary/FoodDiary";
+import "./NutritionDisplay.scss";
+import "../TextField/TextField.scss";
+import "../Button/Button.scss";
 import Table from "../Table/Table";
 import {
   Box,
@@ -18,6 +19,8 @@ import {
   DialogActions,
   Grid,
   Snackbar,
+  InputLabel,
+  FormControl,
 } from "@mui/material";
 import dayjs from "dayjs";
 import DateSelector from "../DateSelector/DateSelector";
@@ -264,115 +267,129 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
   }, [foodServingQty, selectedServingSize, decodedToken]);
 
   return (
-    <Box sx={{ padding: 3 }}>
+    <Box className="nutrition-display-container" sx={{ padding: 3 }}>
       <h1>{foodName}</h1>
-      <>
+      <div className="nutrition-display-inputs">
         <TextField
+          className="primary-textfield nutrition-display-textfield"
           value={foodServingQty}
           onChange={handleTextChange}
-          label="no. of serving"
+          label="Serving"
           variant="outlined"
         />
-        <Select
-          value={selectedServingSize}
-          label="Serving Size"
-          onChange={handleSelectChange}
-        >
-          {servingSizeOptions.map((option) => (
-            <MenuItem key={option.label} value={option.value}>
-              {option.value}
-            </MenuItem>
-          ))}
-        </Select>
+        <FormControl className="serving-select">
+          <InputLabel>Serving Size</InputLabel>
+          <Select
+            value={selectedServingSize}
+            label="Serving Size"
+            onChange={handleSelectChange}
+          >
+            {servingSizeOptions.map((option) => (
+              <MenuItem key={option.label} value={option.value}>
+                {option.value}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         {keycloakId !== null && (
-          <Button variant="contained" onClick={handleAddToDiaryClick}>
+          <Button
+            className="primary-button add-to-diary-button"
+            variant="contained"
+            onClick={handleAddToDiaryClick}
+          >
             Add to diary
           </Button>
         )}
-      </>
-      <Dialog open={isModalOpen} onClose={closeModal}>
-        <DialogTitle>Add to Diary</DialogTitle>
-        <DialogContent>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <Box>Date</Box>
+      </div>
+      <div className="nutrition-display-form">
+        <Dialog open={isModalOpen} onClose={closeModal}>
+          <DialogTitle>Add to Diary</DialogTitle>
+          <DialogContent>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <Box>Date</Box>
+              </Grid>
+              <Grid item xs={6}>
+                <Box>
+                  <DateSelector
+                    date={foodDate}
+                    onDateChange={handleDateChange}
+                  />
+                </Box>
+              </Grid>
+              <Grid item xs={6}>
+                <Box>Meal Type</Box>
+              </Grid>
+              <Grid item xs={6}>
+                <Box>
+                  <Select
+                    value={foodMeal}
+                    label="Serving Size"
+                    onChange={handleSelectFoodMealChange}
+                  >
+                    <MenuItem value={"Breakfast"}>Breakfast</MenuItem>
+                    <MenuItem value={"Lunch"}>Lunch</MenuItem>
+                    <MenuItem value={"Dinner"}>Dinner</MenuItem>
+                    <MenuItem value={"Snack"}>Snack</MenuItem>
+                  </Select>
+                </Box>
+              </Grid>
             </Grid>
-            <Grid item xs={6}>
-              <Box>
-                <DateSelector date={foodDate} onDateChange={handleDateChange} />
-              </Box>
+            <Grid container spacing={2} sx={{ marginTop: 4 }}>
+              <Grid item xs={12}>
+                <Box>Food Name: {foodName}</Box>
+              </Grid>
+              <Grid item xs={6}>
+                <Box>No. of serving</Box>
+              </Grid>
+              <Grid item xs={6}>
+                <Box>
+                  <TextField
+                    value={foodServingQty}
+                    onChange={handleTextChange}
+                    variant="outlined"
+                  />
+                </Box>
+              </Grid>
+              <Grid item xs={6}>
+                <Box>Selected Serving Size</Box>
+              </Grid>
+              <Grid item xs={6}>
+                <Box>
+                  <Select
+                    value={selectedServingSize}
+                    label="Serving Size"
+                    onChange={handleSelectChange} // Now updates selectedServingSize
+                  >
+                    {servingSizeOptions.map((option) => (
+                      <MenuItem key={option.label} value={option.value}>
+                        {option.value}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </Box>
+              </Grid>
             </Grid>
-            <Grid item xs={6}>
-              <Box>Meal Type</Box>
-            </Grid>
-            <Grid item xs={6}>
-              <Box>
-                <Select
-                  value={foodMeal}
-                  label="Serving Size"
-                  onChange={handleSelectFoodMealChange}
-                >
-                  <MenuItem value={"Breakfast"}>Breakfast</MenuItem>
-                  <MenuItem value={"Lunch"}>Lunch</MenuItem>
-                  <MenuItem value={"Dinner"}>Dinner</MenuItem>
-                  <MenuItem value={"Snack"}>Snack</MenuItem>
-                </Select>
-              </Box>
-            </Grid>
-          </Grid>
-          <Grid container spacing={2} sx={{ marginTop: 4 }}>
-            <Grid item xs={12}>
-              <Box>Food Name: {foodName}</Box>
-            </Grid>
-            <Grid item xs={6}>
-              <Box>No. of serving</Box>
-            </Grid>
-            <Grid item xs={6}>
-              <Box>
-                <TextField
-                  value={foodServingQty}
-                  onChange={handleTextChange}
-                  variant="outlined"
-                />
-              </Box>
-            </Grid>
-            <Grid item xs={6}>
-              <Box>Selected Serving Size</Box>
-            </Grid>
-            <Grid item xs={6}>
-              <Box>
-                <Select
-                  value={selectedServingSize}
-                  label="Serving Size"
-                  onChange={handleSelectChange} // Now updates selectedServingSize
-                >
-                  {servingSizeOptions.map((option) => (
-                    <MenuItem key={option.label} value={option.value}>
-                      {option.value}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </Box>
-            </Grid>
-          </Grid>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={closeModal} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleAddToDiary} color="primary">
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={closeModal} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={handleAddToDiary} color="primary">
+              Confirm
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
       <Snackbar
         open={showSnackbar}
         autoHideDuration={3000}
         onClose={handleCloseSnackbar}
         message="Successfully added to diary"
       />
-
-      <Table columns={columns} rows={rows} />
+      <div className="nutrition-display-table">
+        <Table columns={columns} rows={rows} />
+      </div>
     </Box>
   );
 }

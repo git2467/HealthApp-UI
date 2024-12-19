@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { fetchFoods } from "../../api/FDCApi";
 import Table from "../Table/Table";
+import "./Search.scss";
 import "../TextField/TextField.scss";
 
-import { TextField, CircularProgress, Box } from "@mui/material";
+import { TextField, CircularProgress, Box, Chip } from "@mui/material";
 
 export default function Search({ onRowSelected }) {
   const columns = [
@@ -47,33 +48,47 @@ export default function Search({ onRowSelected }) {
   return (
     <div className="searchContainer">
       <Box sx={{ padding: 3 }}>
-        <h1>Search Food</h1>
+        <h1>Food Nutrition Database</h1>
         <TextField
-          className="primary-textfield"
-          label="Search"
+          className="primary-textfield search-textfield"
+          label="Type here to search for a food"
           variant="outlined"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          sx={{ marginBottom: 2 }}
           fullWidth
         />
         {loading ? (
           <Box
             sx={{ display: "flex", justifyContent: "center", marginTop: 40 }}
           >
-            <CircularProgress />
+            <CircularProgress className="loadingIcon" />
           </Box>
         ) : (
           searchTerm && (
-            <Table
-              columns={columns}
-              rows={rows}
-              count={count}
-              page={page}
-              onPageChange={setPage}
-              onRowSelected={onRowSelected}
-              isHover={true}
-            />
+            <Box
+              sx={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 1,
+                marginTop: 2,
+                maxHeight: 400,
+                overflowY: "auto",
+                border: "1px solid #ddd",
+                padding: 2,
+                borderRadius: 2,
+              }}
+            >
+              {rows.length > 0
+                ? rows.map((row) => (
+                    <Chip
+                      key={row.id}
+                      label={row.description}
+                      onClick={() => onRowSelected(row)}
+                      clickable
+                    />
+                  ))
+                : searchTerm && <p>No results found.</p>}
+            </Box>
           )
         )}
       </Box>
