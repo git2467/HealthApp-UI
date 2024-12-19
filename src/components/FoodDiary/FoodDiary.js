@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo, useContext } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import Table from "../Table/Table";
 import dayjs from "dayjs";
 import { fetchNutrients, fetchServingSizeOptions } from "../../api/FDCApi";
@@ -10,6 +10,8 @@ import {
 import nutrition from "../../constants/nutrition.json";
 import { debounce } from "lodash";
 import { AuthContext } from "../../context/AuthContext";
+import DateSelector from "../DateSelector/DateSelector";
+import "./FoodDiary.scss";
 
 // Also used by nutritiondisplay to calculate
 export const calculateFoodNutrients = (
@@ -26,7 +28,7 @@ export const calculateFoodNutrients = (
   return foodNutrients;
 };
 
-export default function FoodDiary({ foodDate, key }) {
+export default function FoodDiary({ foodDate, key, onDateChange }) {
   foodDate = dayjs(foodDate).format("YYYY-MM-DD");
   const { decodedToken } = useContext(AuthContext);
   const keycloakId = decodedToken.sub;
@@ -37,88 +39,215 @@ export default function FoodDiary({ foodDate, key }) {
 
   // add a type in column to put as dropdown, or input field
   const columns = [
-    { label: "Food Name", field: "foodName" },
-    { label: "Serving", field: "foodServingQty", type: "input" },
-    { label: "Serving Size", field: "servingSizeDisplay", type: "select" },
     {
-      label: `Energy, ${
-        nutritionUnits.find((nutrient) => nutrient.name === "Energy")?.unit
-      }`,
+      label: "Food Name",
+      field: "foodName",
+      sx: {
+        headerBackgroundColor: "#E7F6E7",
+        flex: 1,
+      },
+    },
+    {
+      label: "Serving",
+      field: "foodServingQty",
+      type: "input",
+      sx: {
+        headerBackgroundColor: "#E7F6E7",
+        width: 100,
+      },
+    },
+    {
+      label: "Serving Size",
+      field: "servingSizeDisplay",
+      type: "select",
+      sx: {
+        headerBackgroundColor: "#E7F6E7",
+        width: 300,
+      },
+    },
+    {
+      label: (
+        <>
+          Energy <br />(
+          {nutritionUnits.find((nutrient) => nutrient.name === "Energy")?.unit})
+        </>
+      ),
       field: "energy",
+      sx: {
+        width: 100,
+        textAlign: "center",
+      },
     },
     {
-      label: `Fat, ${
-        nutritionUnits.find((nutrient) => nutrient.name === "Total Fat")?.unit
-      }`,
+      label: (
+        <>
+          Fat <br />(
+          {
+            nutritionUnits.find((nutrient) => nutrient.name === "Total Fat")
+              ?.unit
+          }
+          )
+        </>
+      ),
       field: "fat",
+      sx: {
+        width: 100,
+        textAlign: "center",
+      },
     },
     {
-      label: `Cholesterol, ${
-        nutritionUnits.find((nutrient) => nutrient.name === "Cholesterol")?.unit
-      }`,
+      label: (
+        <>
+          Chol <br />(
+          {
+            nutritionUnits.find((nutrient) => nutrient.name === "Cholesterol")
+              ?.unit
+          }
+          )
+        </>
+      ),
       field: "cholesterol",
+      sx: {
+        width: 100,
+        textAlign: "center",
+      },
     },
     {
-      label: `Sodium, ${
-        nutritionUnits.find((nutrient) => nutrient.name === "Sodium")?.unit
-      }`,
+      label: (
+        <>
+          Sodium <br />(
+          {nutritionUnits.find((nutrient) => nutrient.name === "Sodium")?.unit})
+        </>
+      ),
       field: "sodium",
+      sx: {
+        width: 100,
+        textAlign: "center",
+      },
     },
     {
-      label: `Carbohydrate, ${
-        nutritionUnits.find(
-          (nutrient) => nutrient.name === "Total Carbohydrate"
-        )?.unit
-      }`,
+      label: (
+        <>
+          Carbs <br />(
+          {
+            nutritionUnits.find(
+              (nutrient) => nutrient.name === "Total Carbohydrate"
+            )?.unit
+          }
+          )
+        </>
+      ),
       field: "carbohydrate",
+      sx: {
+        width: 100,
+        textAlign: "center",
+      },
     },
     {
-      label: `Protein, ${
-        nutritionUnits.find((nutrient) => nutrient.name === "Protein")?.unit
-      }`,
+      label: (
+        <>
+          Protein <br />(
+          {nutritionUnits.find((nutrient) => nutrient.name === "Protein")?.unit}
+          )
+        </>
+      ),
       field: "protein",
+      sx: {
+        width: 100,
+        textAlign: "center",
+      },
     },
   ];
 
   const totalColumns = [
-    { label: "", field: "text" },
+    { label: "", field: "text", width: 180 },
     {
-      label: `Energy, ${
-        nutritionUnits.find((nutrient) => nutrient.name === "Energy")?.unit
-      }`,
+      label: (
+        <>
+          Energy <br />
+          {nutritionUnits.find((nutrient) => nutrient.name === "Energy")?.unit}
+        </>
+      ),
       field: "energy",
+      sx: {
+        width: 100,
+        textAlign: "center",
+      },
     },
     {
-      label: `Fat, ${
-        nutritionUnits.find((nutrient) => nutrient.name === "Total Fat")?.unit
-      }`,
+      label: (
+        <>
+          Fat <br />
+          {
+            nutritionUnits.find((nutrient) => nutrient.name === "Total Fat")
+              ?.unit
+          }
+        </>
+      ),
       field: "fat",
+      sx: {
+        width: 100,
+        textAlign: "center",
+      },
     },
     {
-      label: `Cholesterol, ${
-        nutritionUnits.find((nutrient) => nutrient.name === "Cholesterol")?.unit
-      }`,
+      label: (
+        <>
+          Chol <br />
+          {
+            nutritionUnits.find((nutrient) => nutrient.name === "Cholesterol")
+              ?.unit
+          }
+        </>
+      ),
       field: "cholesterol",
+      sx: {
+        width: 100,
+        textAlign: "center",
+      },
     },
     {
-      label: `Sodium, ${
-        nutritionUnits.find((nutrient) => nutrient.name === "Sodium")?.unit
-      }`,
+      label: (
+        <>
+          Sodium <br />
+          {nutritionUnits.find((nutrient) => nutrient.name === "Sodium")?.unit}
+        </>
+      ),
       field: "sodium",
+      sx: {
+        width: 100,
+        textAlign: "center",
+      },
     },
     {
-      label: `Carbohydrate, ${
-        nutritionUnits.find(
-          (nutrient) => nutrient.name === "Total Carbohydrate"
-        )?.unit
-      }`,
+      label: (
+        <>
+          Carbs <br />
+          {
+            nutritionUnits.find(
+              (nutrient) => nutrient.name === "Total Carbohydrate"
+            )?.unit
+          }
+        </>
+      ),
       field: "carbohydrate",
+      sx: {
+        width: 100,
+        textAlign: "center",
+      },
     },
     {
-      label: `Protein, ${
-        nutritionUnits.find((nutrient) => nutrient.name === "Protein")?.unit
-      }`,
+      label: (
+        <>
+          Protein <br />
+          {nutritionUnits.find((nutrient) => nutrient.name === "Protein")?.unit}
+        </>
+      ),
       field: "protein",
+      sx: {
+        width: 100,
+        textAlign: "center",
+      },
     },
   ];
 
@@ -360,15 +489,15 @@ export default function FoodDiary({ foodDate, key }) {
       setTotalRows([
         {
           text: "Total",
-          energy: totals.energy,
-          fat: totals.fat,
-          cholesterol: totals.cholesterol,
-          sodium: totals.sodium,
-          carbohydrate: totals.carbohydrate,
-          protein: totals.protein,
+          energy: totals.energy.toFixed(2),
+          fat: totals.fat.toFixed(2),
+          cholesterol: totals.cholesterol.toFixed(2),
+          sodium: totals.sodium.toFixed(2),
+          carbohydrate: totals.carbohydrate.toFixed(2),
+          protein: totals.protein.toFixed(2),
         },
         {
-          text: "Goal",
+          text: "Recommended (by age)",
           energy: (totals.energy + remaining.energy).toFixed(2),
           fat: (totals.fat + remaining.fat).toFixed(2),
           cholesterol: (totals.cholesterol + remaining.cholesterol).toFixed(2),
@@ -380,12 +509,12 @@ export default function FoodDiary({ foodDate, key }) {
         },
         {
           text: "Remaining",
-          energy: remaining.energy,
-          fat: remaining.fat,
-          cholesterol: remaining.cholesterol,
-          sodium: remaining.sodium,
-          carbohydrate: remaining.carbohydrate,
-          protein: remaining.protein,
+          energy: remaining.energy.toFixed(2),
+          fat: remaining.fat.toFixed(2),
+          cholesterol: remaining.cholesterol.toFixed(2),
+          sodium: remaining.sodium.toFixed(2),
+          carbohydrate: remaining.carbohydrate.toFixed(2),
+          protein: remaining.protein.toFixed(2),
         },
       ]);
     }
@@ -468,7 +597,6 @@ export default function FoodDiary({ foodDate, key }) {
               servingSizeGramValue,
               value
             );
-            console.log(updatedRow);
             updateGroupedRows(updatedRow);
             if (changeType === "blur") {
               await updateFoodEntryDB({ ...updatedRow, foodServingQty: value });
@@ -528,14 +656,38 @@ export default function FoodDiary({ foodDate, key }) {
 
   return (
     <>
-      <h1>Food Diary</h1>
-      <Table
-        columns={columns}
-        groupedRows={rows}
-        onDelete={handleDelete}
-        onInputChange={handleInputChange}
-      />
-      {rows && <Table columns={totalColumns} rows={totalRows} />}
+      <div className="foodDiaryHeader">
+        <h1>Food Diary</h1>
+        <div className="dateSelectorContainer">
+          <DateSelector
+            date={foodDate}
+            onDateChange={onDateChange}
+            showNavButtons={true}
+          />
+        </div>
+      </div>
+      <div className="foodDiaryTableContainer">
+        <Table
+          columns={columns}
+          groupedRows={rows}
+          onDelete={handleDelete}
+          onInputChange={handleInputChange}
+          showBorders={true}
+        />
+        {rows && (
+          <div className="totalNutrientsContainer">
+            <div className="totalNutrientsTable">
+              <Table
+                columns={totalColumns}
+                rows={totalRows}
+                hideHeader={true}
+                showVertBorders={true}
+              />
+            </div>
+            <div className="nutrientTableSpacer"></div>
+          </div>
+        )}
+      </div>
     </>
   );
 }

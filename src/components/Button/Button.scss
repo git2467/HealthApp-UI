@@ -28,3 +28,20 @@
 .secondary-button.logout-button:hover {
   opacity: 0.8;
 }
+
+.MuiButton-root.iconButtons {
+  box-sizing: border-box;
+  font-weight: bold;
+  color: black;
+  border: none;
+  padding: 0px;
+  height: 30px;
+  width: 30px;
+  min-width: 0px;
+  border-radius: 50%;
+}
+
+.MuiButton-root.iconButtons:hover {
+  border: none;
+  background-color: rgba(0, 0, 0, 0.04);
+}

@@ -1,6 +1,7 @@
 .mainContainer {
   display: flex;
   flex-direction: column;
+  margin-bottom: 20px;
 
   .mainBody {
     display: flex;
@@ -14,4 +15,8 @@
   .mainNutritionDisplay {
     width: 40%;
   }
+}
+
+.foodDiaryContainer {
+  margin: 0 24px;
 }
