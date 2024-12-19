@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useState } from "react";
 import "./Table.scss";
 
 import {
@@ -8,11 +8,16 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   Paper,
   Pagination,
   TextField,
   Select,
   MenuItem,
+  Button,
 } from "@mui/material";
 
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -28,7 +33,12 @@ export default function Table({
   isHover,
   onDelete,
   onInputChange,
+  hideHeader,
+  showVertBorders,
 }) {
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [rowToDelete, setRowToDelete] = useState(null);
+
   const handlePageChange = (page) => {
     onPageChange(page);
   };
@@ -39,8 +49,20 @@ export default function Table({
     }
   };
 
+  const handleCloseDeleteModal = () => {
+    setRowToDelete(null);
+    setDeleteModalOpen(false);
+  };
+
+  const handleConfirmDelete = () => {
+    onDelete(rowToDelete);
+    setRowToDelete(null);
+    setDeleteModalOpen(false);
+  };
+
   const handleDeleteClick = (event, rowToDelete) => {
-    onDelete(rowToDelete.id);
+    setRowToDelete(rowToDelete.id);
+    setDeleteModalOpen(true);
   };
 
   const handleTextChange = (event, row, field) => {
@@ -64,16 +86,38 @@ export default function Table({
         sx={{ marginTop: 2 }}
       >
         <MuiTable>
-          <TableHead className="tableHead">
-            <TableRow>
-              {columns?.map((column) => (
-                <TableCell className="tableCell">{column.label}</TableCell>
-              ))}
-              {onDelete != null && (
-                <TableCell className="tableCell">Actions</TableCell>
-              )}
-            </TableRow>
-          </TableHead>
+          {!hideHeader && (
+            <TableHead className="tableHead">
+              <TableRow>
+                {columns?.map((column) => (
+                  <TableCell
+                    className="tableCell"
+                    sx={{
+                      width: column?.sx?.width || "auto",
+                      backgroundColor: `${column?.sx?.headerBackgroundColor} !important`,
+                      textAlign: column?.sx?.textAlign,
+                      flex: column?.sx?.flex,
+                      border: showVertBorders
+                        ? groupedRows
+                          ? "1px solid white"
+                          : "1px solid rgb(242,242,242)"
+                        : "none",
+                    }}
+                  >
+                    {column.label}
+                  </TableCell>
+                ))}
+                {onDelete != null && (
+                  <TableCell
+                    className="tableCell"
+                    sx={{ width: "102px", backgroundColor: "white" }}
+                  >
+                    Actions
+                  </TableCell>
+                )}
+              </TableRow>
+            </TableHead>
+          )}
           <TableBody>
             {/* Unified row rendering logic for both groupedRows and normal rows */}
             {(groupedRows ?? rows)?.map((groupedRow, groupedIndex) => {
@@ -91,59 +135,114 @@ export default function Table({
                 >
                   {/* Render header for first row in groupedRows */}
                   {isGrouped && rowIndex === 0 ? (
-                    <TableCell colSpan={columns.length}>{row}</TableCell>
-                  ) : (
-                    columns.map((column) => (
-                      <TableCell key={column.field}>
-                        {/* Render based on column type */}
-                        {column.type === "input" ? (
-                          <TextField
-                            value={row[column.field]}
-                            onChange={(event) =>
-                              handleTextChange(event, row, column.field)
-                            }
-                            onBlur={(event) =>
-                              handleTextBlur(event, row, column.field)
-                            }
-                          />
-                        ) : column.type === "select" ? (
-                          <Select
-                            value={
-                              row[column.field]?.find(
-                                (option) => option.selected
-                              )?.value
-                            }
-                            onChange={(event) =>
-                              handleSelectChange(event, row, column.field)
-                            }
-                          >
-                            {row[column.field]?.map((option) => (
-                              <MenuItem key={option.label} value={option.value}>
-                                {option.value}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        ) : (
-                          row[column.field] // Default case: Render the cell value as text
-                        )}
-                      </TableCell>
-                    ))
-                  )}
-
-                  {/* Render Delete icon if onDelete is provided */}
-                  {onDelete != null && (!isGrouped || rowIndex !== 0) && (
-                    <TableCell>
-                      <DeleteIcon
-                        onClick={(event) => handleDeleteClick(event, row)}
-                        style={{ cursor: "pointer", color: "red" }}
-                      />
+                    <TableCell
+                      className="tableGroupedRowHeader"
+                      colSpan={columns.length + 1}
+                    >
+                      {row}
                     </TableCell>
+                  ) : (
+                    <>
+                      {columns.map((column, index) => (
+                        <TableCell
+                          className={`${isGrouped ? "tableGroupedRow" : ""}`}
+                          sx={{
+                            width: column?.sx?.width || "auto",
+                            flex: column?.sx?.flex,
+                            border: showVertBorders
+                              ? groupedRows
+                                ? "1px solid white !important"
+                                : "1px solid #CAEECF"
+                              : "none",
+                            backgroundColor:
+                              index === 0 && hideHeader && "#CAEECF",
+                            fontWeight: index === 0 && hideHeader && "bold",
+                            textAlign: column?.sx?.textAlign,
+                          }}
+                          key={column.field}
+                        >
+                          {/* Render based on column type */}
+                          {column.type === "input" ? (
+                            <TextField
+                              className="primary-textfield table-textfield"
+                              value={row[column.field]}
+                              onChange={(event) =>
+                                handleTextChange(event, row, column.field)
+                              }
+                              onBlur={(event) =>
+                                handleTextBlur(event, row, column.field)
+                              }
+                            />
+                          ) : column.type === "select" ? (
+                            <Select
+                              className={isGrouped ? "tableGroupedSelect" : ""}
+                              value={
+                                row[column.field]?.find(
+                                  (option) => option.selected
+                                )?.value
+                              }
+                              onChange={(event) =>
+                                handleSelectChange(event, row, column.field)
+                              }
+                            >
+                              {row[column.field]?.map((option) => (
+                                <MenuItem
+                                  key={option.label}
+                                  value={option.value}
+                                >
+                                  {option.value}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          ) : (
+                            row[column.field] // Default case: Render the cell value as text
+                          )}
+                        </TableCell>
+                      ))}
+                      {onDelete != null && (!isGrouped || rowIndex !== 0) && (
+                        <TableCell
+                          className={`actionContainer ${
+                            isGrouped ? "tableGroupedRow" : ""
+                          }`}
+                        >
+                          <Button
+                            className="iconButtons tableGroupedRowButton"
+                            variant="outlined"
+                            onClick={(event) => handleDeleteClick(event, row)}
+                          >
+                            <DeleteIcon className="deleteIcon" />
+                          </Button>
+                        </TableCell>
+                      )}
+                    </>
                   )}
                 </TableRow>
               ));
             })}
           </TableBody>
         </MuiTable>
+        <Dialog open={deleteModalOpen} onClose={handleCloseDeleteModal}>
+          <DialogTitle>Confirm Deletion</DialogTitle>
+          <DialogContent>
+            <p>Are you sure you want to delete this food diary entry? </p>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={handleCloseDeleteModal}
+              color="primary"
+              variant="outlined"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConfirmDelete}
+              color="error"
+              variant="contained"
+            >
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
       </TableContainer>
       {onPageChange != null && (
         <Pagination

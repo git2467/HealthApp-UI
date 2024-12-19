@@ -8,10 +8,16 @@
 
 .tableHead {
   .tableCell {
+    box-sizing: border-box;
     color: $color-4;
     background-color: $color-1;
     font-weight: bold;
+    padding: 16px 16px;
   }
+}
+
+.tableHead .MuiTableCell-root {
+  font-size: $font-size-md;
 }
 
 .tableRow {
@@ -26,12 +32,48 @@
   }
 }
 
-.tableHead .MuiTableCell-root {
-  font-size: $font-size-md;
-}
-
 .tableRow .MuiTableCell-root {
+  box-sizing: border-box;
   font-size: $font-size-md;
   border-bottom: none;
   border-top: 1px solid $color-1;
+  padding: 16px 16px;
 }
+
+// CSS for groupedrows
+.MuiTableCell-root.tableGroupedRowHeader {
+  color: $primary-color;
+  font-weight: bold;
+  font-size: 24px; 
+  padding: 16px 0px 16px 10px;
+}
+
+.MuiTableCell-root.tableGroupedRow {
+  background-color: $color-gray;
+}
+
+
+// CSS for deletebutton (but now only for groupedrow background)
+.MuiTableCell-root.actionContainer {
+  text-align: center;
+}
+
+.MuiTableCell-root.actionContainer .tableGroupedRowButton {
+  padding: 18px;
+}
+
+.MuiTableCell-root.actionContainer .tableGroupedRowButton:hover {
+  background-color: rgb(220, 220, 220);
+
+}
+
+.MuiTableCell-root.actionContainer .deleteIcon {
+  color: black;
+}
+
+.MuiTableCell-root.actionContainer .tableGroupedRowButton:hover .deleteIcon {
+  color: rgb(255, 69, 58);
+}
+
+
+
