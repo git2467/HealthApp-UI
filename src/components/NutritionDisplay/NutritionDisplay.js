@@ -145,10 +145,11 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
           name: nutrient.name,
           displayName:
             nutrient.name +
-            ", " +
+            " (" +
             nutritionUnits.find(
               (nutritionUnit) => nutritionUnit.name === nutrient.name
-            )?.unit,
+            )?.unit +
+            ")",
           amount:
             foodNutrients.find(
               (foodNutrient) => foodNutrient.name === nutrient.name
