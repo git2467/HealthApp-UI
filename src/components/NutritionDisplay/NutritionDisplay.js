@@ -6,6 +6,7 @@ import { calculateFoodNutrients } from "../FoodDiary/FoodDiary";
 import "./NutritionDisplay.scss";
 import "../TextField/TextField.scss";
 import "../Button/Button.scss";
+import "../Dialog/Dialog.scss";
 import Table from "../Table/Table";
 import {
   Box,
@@ -302,30 +303,36 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
           </Button>
         )}
       </div>
-      <div className="nutrition-display-form">
-        <Dialog open={isModalOpen} onClose={closeModal}>
+      <div>
+        <Dialog
+          className="nutrition-display-form"
+          open={isModalOpen}
+          onClose={closeModal}
+        >
           <DialogTitle>Add to Diary</DialogTitle>
           <DialogContent>
             <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <Box>Date</Box>
+              <Grid item xs={12}>
+                <DateSelector date={foodDate} onDateChange={handleDateChange} />
               </Grid>
-              <Grid item xs={6}>
-                <Box>
-                  <DateSelector
-                    date={foodDate}
-                    onDateChange={handleDateChange}
-                  />
-                </Box>
+              <Grid item xs={12}>
+                <TextField
+                  disabled
+                  label="Food Name"
+                  className="primary-textfield foodName"
+                  value={foodName}
+                  variant="outlined"
+                />
               </Grid>
-              <Grid item xs={6}>
-                <Box>Meal Type</Box>
-              </Grid>
-              <Grid item xs={6}>
-                <Box>
+              <Grid item xs={4}>
+                <FormControl>
+                  <InputLabel className="primary-select-label">
+                    Meal Type
+                  </InputLabel>
                   <Select
+                    label="Meal Type"
+                    className="primary-select mealType"
                     value={foodMeal}
-                    label="Serving Size"
                     onChange={handleSelectFoodMealChange}
                   >
                     <MenuItem value={"Breakfast"}>Breakfast</MenuItem>
@@ -333,34 +340,30 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
                     <MenuItem value={"Dinner"}>Dinner</MenuItem>
                     <MenuItem value={"Snack"}>Snack</MenuItem>
                   </Select>
-                </Box>
+                </FormControl>
               </Grid>
-            </Grid>
-            <Grid container spacing={2} sx={{ marginTop: 4 }}>
-              <Grid item xs={12}>
-                <Box>Food Name: {foodName}</Box>
-              </Grid>
-              <Grid item xs={6}>
-                <Box>No. of serving</Box>
-              </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={2.5}>
                 <Box>
                   <TextField
+                    label="Serving"
+                    className="primary-textfield servingTextField"
                     value={foodServingQty}
                     onChange={handleTextChange}
                     variant="outlined"
                   />
                 </Box>
               </Grid>
-              <Grid item xs={6}>
-                <Box>Selected Serving Size</Box>
-              </Grid>
-              <Grid item xs={6}>
-                <Box>
+
+              <Grid item xs={5.5}>
+                <FormControl className="servingSize">
+                  <InputLabel className="primary-select-label">
+                    Serving Size
+                  </InputLabel>
                   <Select
-                    value={selectedServingSize}
                     label="Serving Size"
-                    onChange={handleSelectChange} // Now updates selectedServingSize
+                    className="primary-select"
+                    value={selectedServingSize}
+                    onChange={handleSelectChange}
                   >
                     {servingSizeOptions.map((option) => (
                       <MenuItem key={option.label} value={option.value}>
@@ -368,15 +371,23 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
                       </MenuItem>
                     ))}
                   </Select>
-                </Box>
+                </FormControl>
               </Grid>
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button onClick={closeModal} color="primary">
+            <Button
+              className="cancelButton"
+              onClick={closeModal}
+              variant="outlined"
+            >
               Cancel
             </Button>
-            <Button onClick={handleAddToDiary} color="primary">
+            <Button
+              className="primary-button confirm-button"
+              onClick={handleAddToDiary}
+              variant="contained"
+            >
               Confirm
             </Button>
           </DialogActions>

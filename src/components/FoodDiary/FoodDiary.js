@@ -12,6 +12,7 @@ import { debounce } from "lodash";
 import { AuthContext } from "../../context/AuthContext";
 import DateSelector from "../DateSelector/DateSelector";
 import "./FoodDiary.scss";
+import "../Dialog/Dialog.scss";
 
 // Also used by nutritiondisplay to calculate
 export const calculateFoodNutrients = (

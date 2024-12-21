@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./Table.scss";
+import "../Button/Button.scss";
 
 import {
   Table as MuiTable,
@@ -175,7 +176,7 @@ export default function Table({
                             />
                           ) : column.type === "select" ? (
                             <Select
-                              className="tableGroupedSelect"
+                              className="primary-select"
                               value={
                                 row[column.field]?.find(
                                   (option) => option.selected
@@ -228,8 +229,8 @@ export default function Table({
           </DialogContent>
           <DialogActions>
             <Button
+              className="cancelButton"
               onClick={handleCloseDeleteModal}
-              color="primary"
               variant="outlined"
             >
               Cancel
