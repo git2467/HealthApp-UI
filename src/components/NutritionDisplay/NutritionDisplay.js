@@ -1,13 +1,4 @@
 import React, { useState, useEffect, useContext } from "react";
-import nutrition from "../../constants/nutrition.json";
-import { fetchNutrients, fetchServingSizeOptions } from "../../api/FDCApi";
-import { createFoodEntry } from "../../api/EngineApi";
-import { calculateFoodNutrients } from "../FoodDiary/FoodDiary";
-import "./NutritionDisplay.scss";
-import "../TextField/TextField.scss";
-import "../Button/Button.scss";
-import "../Dialog/Dialog.scss";
-import Table from "../Table/Table";
 import {
   Box,
   Button,
@@ -24,8 +15,19 @@ import {
   FormControl,
 } from "@mui/material";
 import dayjs from "dayjs";
-import DateSelector from "../DateSelector/DateSelector";
+import { fetchNutrients, fetchServingSizeOptions } from "../../api/FDCApi";
+import { createFoodEntry } from "../../api/EngineApi";
+import { calculateFoodNutrients } from "../FoodDiary/FoodDiary";
 import { AuthContext } from "../../context/AuthContext";
+
+import DateSelector from "../DateSelector/DateSelector";
+import nutrition from "../../constants/nutrition.json";
+import Table from "../Table/Table";
+
+import "./NutritionDisplay.scss";
+import "../TextField/TextField.scss";
+import "../Button/Button.scss";
+import "../Dialog/Dialog.scss";
 
 export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
   const columns = [
@@ -51,7 +53,7 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
   const foodName = selectedFood.description;
   const [foodDate, setFoodDate] = useState(dayjs());
   const [foodMeal, setFoodMeal] = useState("Breakfast");
-  const [foodServingQty, setFoodServingQty] = useState(1);
+  const [foodServingQty, setFoodServingQty] = useState("1.0");
   const [servingSizeOptions, setServingSizeOptions] = useState([]);
   const [selectedServingSize, setSelectedServingSize] = useState("");
 
@@ -188,7 +190,25 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
 
   // ------------ handlers for user input change
   const handleTextChange = async (event) => {
+    // Validate the value: only numbers with 1 decimal place, (up to 9999.9)
+    const decimalRegex = /^$|^[0-9]{1,4}(\.[0-9]{0,1})?$/;
+
+    // Return early if validation fails
+    if (!decimalRegex.test(event.target.value)) {
+      return;
+    }
     setFoodServingQty(event.target.value);
+  };
+
+  const handleTextBlur = (event) => {
+    var value = event.target.value;
+    // Check if the value ends with a decimal point but no digits after it (e.g., "31.")
+    if (value.endsWith(".") && !value.includes(".")) {
+      value = `${value}0`; // Add the "0" after the decimal point
+    } else {
+      value = parseFloat(value).toFixed(1); // Format to 1 decimal place
+    }
+    setFoodServingQty(value);
   };
 
   const handleSelectChange = (event) => {
@@ -257,7 +277,7 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
   useEffect(() => {
     if (selectedFood) {
       searchNutrients();
-      setFoodServingQty(1);
+      setFoodServingQty("1.0");
     }
   }, [selectedFood]);
 
@@ -276,6 +296,7 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
           className="primary-textfield nutrition-display-textfield"
           value={foodServingQty}
           onChange={handleTextChange}
+          onBlur={handleTextBlur}
           label="Serving"
           variant="outlined"
         />
