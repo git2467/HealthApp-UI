@@ -293,7 +293,7 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
             ))}
           </Select>
         </FormControl>
-        {keycloakId !== null && (
+        {isLogin && (
           <Button
             className="primary-button add-to-diary-button"
             variant="contained"
