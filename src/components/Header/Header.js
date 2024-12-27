@@ -1,12 +1,7 @@
 import { Button } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
-import {
-  logout,
-  refreshToken,
-  updateAge,
-  getCookie,
-} from "../../api/KeycloakApi";
+import { logout, relogin, updateAge, getCookie } from "../../api/KeycloakApi";
 import { AuthContext } from "../../context/AuthContext";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
@@ -64,7 +59,7 @@ const Header = () => {
       setSelectedAge(newAge);
       await updateAge(newAge);
       // update decodedtoken to update display in fooddiary and nutri display
-      await refreshToken();
+      await relogin();
       const accessToken = getCookie("accessToken");
       setDecodedToken(jwtDecode(accessToken));
     } catch (error) {

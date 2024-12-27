@@ -5,7 +5,12 @@ import Search from "../Search/Search";
 import "./MainContainer.scss";
 import NutritionDisplay from "../NutritionDisplay/NutritionDisplay";
 import FoodDiary from "../FoodDiary/FoodDiary";
-import { login, refreshToken, getCookie } from "../../api/KeycloakApi";
+import {
+  login,
+  relogin,
+  getCookie,
+  checkTokenExpiry,
+} from "../../api/KeycloakApi";
 import { jwtDecode } from "jwt-decode";
 import { AuthContext } from "../../context/AuthContext";
 
@@ -34,6 +39,7 @@ const MainContainer = () => {
 
   useEffect(() => {
     const accessToken = getCookie("accessToken");
+    const refreshToken = getCookie("refreshToken");
 
     //use authorisation code to retrieve access token
     if (code && !accessToken) {
@@ -49,18 +55,23 @@ const MainContainer = () => {
       };
       handleLogin();
     } else if (accessToken) {
-      //when user refresh page
-      const handleRefreshPage = async () => {
-        try {
-          await refreshToken();
-          setDecodedToken(jwtDecode(accessToken));
-          setIsLogin(true);
-        } catch (error) {
-          console.error("Error in handleRefreshPage:", error);
-          setIsLogin(false);
-        }
-      };
-      handleRefreshPage();
+      if (checkTokenExpiry("accessToken")) {
+        //when token expire
+        setIsLogin(false);
+      } else {
+        //when user refresh page
+        const handleRefreshPage = async () => {
+          try {
+            const newAccessToken = await relogin();
+            setDecodedToken(jwtDecode(newAccessToken));
+            setIsLogin(true);
+          } catch (error) {
+            console.error("Error in handleRefreshPage:", error);
+            setIsLogin(false);
+          }
+        };
+        handleRefreshPage();
+      }
     }
   }, [code]);
 
