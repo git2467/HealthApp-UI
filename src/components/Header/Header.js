@@ -76,9 +76,8 @@ const Header = () => {
         <div className="header-center">
           <p>I am </p>
           <Select
-            className="header-select"
+            className="primary-select header-select"
             value={selectedAge || ""}
-            label="Age"
             onChange={handleChange}
           >
             {options.map((option, index) => (

@@ -6,6 +6,7 @@ import dayjs from "dayjs";
 import { Button, Box } from "@mui/material";
 
 import "../Button/Button.scss";
+import "../DateSelector/DateSelector.scss";
 
 export default function DateSelector({ date, onDateChange, showNavButtons }) {
   date = dayjs(date);
@@ -35,6 +36,7 @@ export default function DateSelector({ date, onDateChange, showNavButtons }) {
         )}
 
         <DatePicker
+          className="datePicker"
           label="DD/MM/YY"
           format="DD/MM/YYYY"
           views={["year", "month", "day"]}

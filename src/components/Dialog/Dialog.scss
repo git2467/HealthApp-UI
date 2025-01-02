@@ -1,0 +1,9 @@
+@use "../Global.scss" as *;
+
+.MuiDialogTitle-root {
+    font-weight: bold !important;
+}
+
+.MuiDialogContent-root .MuiBox-root {
+    font-family: $font-primary !important;
+}

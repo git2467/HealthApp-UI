@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
-import Table from "../Table/Table";
 import dayjs from "dayjs";
+import { debounce } from "lodash";
 import { fetchNutrients, fetchServingSizeOptions } from "../../api/FDCApi";
 import {
   deleteFoodEntryById,
@@ -9,10 +9,13 @@ import {
 } from "../../api/EngineApi";
 import nutrition from "../../constants/nutrition.json";
 import sampleFoodDiary from "../../constants/sampleFoodDiary.json";
-import { debounce } from "lodash";
 import { AuthContext } from "../../context/AuthContext";
+
+import Table from "../Table/Table";
 import DateSelector from "../DateSelector/DateSelector";
+
 import "./FoodDiary.scss";
+import "../Dialog/Dialog.scss";
 
 // Also used by nutritiondisplay to calculate
 export const calculateFoodNutrients = (
@@ -43,6 +46,9 @@ export default function FoodDiary({
   const { nutritionUnits, recommendedByAgeGroup } = nutrition;
   const recommendedNutrients = recommendedByAgeGroup[age];
 
+  const [rows, setRows] = useState();
+  const [totalRows, setTotalRows] = useState();
+
   // add a type in column to put as dropdown, or input field
   const columns = [
     {
@@ -59,7 +65,7 @@ export default function FoodDiary({
       type: "input",
       sx: {
         headerBackgroundColor: "#E7F6E7",
-        width: 100,
+        width: 120,
       },
     },
     {
@@ -257,12 +263,7 @@ export default function FoodDiary({
     },
   ];
 
-  const [rows, setRows] = useState();
-  const [totalRows, setTotalRows] = useState();
-
   // HELPER FUNCTIONS
-  // Calculate the nutrient amounts based on serving size * serving qty
-
   const updateFoodNutrients = async (
     row,
     servingSizeGramValue,
@@ -271,14 +272,12 @@ export default function FoodDiary({
     try {
       const nutrients = await fetchNutrients(row.fdcId);
 
-      // Calculate the nutrient amounts
       const foodNutrients = calculateFoodNutrients(
         nutrients,
         servingSizeGramValue,
         foodServingQty
       );
 
-      // Update row with the updated nutrient values
       const updatedRow = {
         ...row,
         foodServingSizeGramValue: servingSizeGramValue,
@@ -342,7 +341,6 @@ export default function FoodDiary({
     });
   };
 
-  // Function to calculate totals
   const calculateColumnTotals = (rows) => {
     const totals = {
       energy: 0,
@@ -364,7 +362,6 @@ export default function FoodDiary({
       });
     });
 
-    // Round to two decimal places if needed
     for (let key in totals) {
       totals[key] = parseFloat(totals[key].toFixed(2));
     }
@@ -434,7 +431,7 @@ export default function FoodDiary({
             fdcId: food.fdcId,
             foodMeal: food.foodMeal,
             foodName: food.foodName,
-            foodServingQty: food.foodServingQty,
+            foodServingQty: food.foodServingQty.toFixed(1),
             foodServingSizeUnitValue: food.foodServingSizeUnitValue,
             foodServingSizeUnit: food.foodServingSizeUnit,
             foodServingSizeGramValue: food.foodServingSizeGramValue,
@@ -472,7 +469,6 @@ export default function FoodDiary({
         return [meal, ...rowsForMeal];
       });
 
-      // Set rows after all nutrient data has been fetched and processed
       setRows(groupedRows);
     } catch (error) {
       console.error("error:", error);
@@ -544,7 +540,6 @@ export default function FoodDiary({
       });
     });
 
-    // update database
     try {
       deleteFoodEntryById(rowToDeleteId);
     } catch (error) {
@@ -577,6 +572,14 @@ export default function FoodDiary({
     changeType
   ) => {
     if (fieldToUpdate == "foodServingQty") {
+      // Allow value inputs up to 4digits and 1d.p (e.g. "1111.1") and its incomplete form (e.g. "1.", "1", ".", ".1")
+      const decimalRegex = /^$|^([0-9]{1,4}(\.[0-9]?)?|\.[0-9]?)$/;
+
+      // Return early if validation fails
+      if (!decimalRegex.test(value)) {
+        return;
+      }
+
       // update row with the changed serving size qty (without updating the nutrient display)
       setRows((prevRows) => {
         return prevRows.map((mealGroup) => {
@@ -597,7 +600,7 @@ export default function FoodDiary({
       // create unique debounced request for each servingqty field
       const debouncedRequest = getDebouncedHandler(
         rowToUpdate.id,
-        async (value, rowToUpdate, changeType) => {
+        async (value, rowToUpdate, changeType, event) => {
           try {
             const servingSizeGramValue = rowToUpdate.servingSizeDisplay.find(
               (option) => option.selected
@@ -610,7 +613,37 @@ export default function FoodDiary({
             );
             updateGroupedRows(updatedRow);
             if (changeType === "blur") {
-              await updateFoodEntryDB({ ...updatedRow, foodServingQty: value });
+              // Format incomplete value inputs to 1dp (e.g. "1.", "1", ".", ".1")
+              if (value === "." || value === "") {
+                value = "0.0"; // Format "." to "0.0"
+              } else if (value.startsWith(".") && value.length === 2) {
+                value = `0${value}`; // Format ".1" to "0.1"
+              } else if (value.endsWith(".") && value.includes(".")) {
+                value = `${value}0`; // Add "0" after the decimal point if it ends with "."
+              } else {
+                value = parseFloat(value).toFixed(1); // Format to 1 decimal place
+              }
+              // update display
+              setRows((prevRows) => {
+                return prevRows.map((mealGroup) => {
+                  const [meal, ...rowsForMeal] = mealGroup;
+                  const updatedRowsForMeal = rowsForMeal.map((row) => {
+                    if (row.id === rowToUpdate.id) {
+                      return {
+                        ...row,
+                        foodServingQty: value,
+                      };
+                    }
+                    return row;
+                  });
+                  return [meal, ...updatedRowsForMeal];
+                });
+              });
+              // update DB
+              await updateFoodEntryDB({
+                ...updatedRow,
+                foodServingQty: value,
+              });
             }
           } catch (error) {
             console.error("Error updating food nutrients:", error);

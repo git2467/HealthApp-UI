@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from "react";
 import dayjs from "dayjs";
 import Header from "../Header/Header";
 import Search from "../Search/Search";
-import "./MainContainer.scss";
 import NutritionDisplay from "../NutritionDisplay/NutritionDisplay";
 import FoodDiary from "../FoodDiary/FoodDiary";
 import {
@@ -14,6 +13,8 @@ import {
 import { jwtDecode } from "jwt-decode";
 import { AuthContext } from "../../context/AuthContext";
 import { Alert } from "@mui/material";
+
+import "./MainContainer.scss";
 
 const MainContainer = () => {
   const { setDecodedToken, isLogin, setIsLogin } = useContext(AuthContext);

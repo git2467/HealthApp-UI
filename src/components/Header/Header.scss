@@ -36,3 +36,30 @@ header h1 {
   display: flex;
   align-items: center;
 }
+
+.MuiInputBase-root.primary-select.header-select.header-select {
+  background-color: $primary-color;
+}
+
+.MuiInputBase-root.primary-select.header-select .MuiSelect-select {
+  color: white;
+  padding: 6px;
+  padding-right: 32px;
+}
+
+.MuiInputBase-root.primary-select.header-select fieldset {
+  border: 1px solid white;
+}
+
+.MuiInputBase-root.primary-select.header-select:hover fieldset {
+  border: 2px solid white;
+}
+
+.MuiInputBase-root.primary-select.header-select.Mui-focused fieldset {
+  border: 2px solid white;
+}
+
+.MuiInputBase-root.primary-select.header-select svg {
+  color: white;
+}
+

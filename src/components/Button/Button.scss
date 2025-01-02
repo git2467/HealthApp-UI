@@ -45,3 +45,12 @@
   border: none;
   background-color: rgba(0, 0, 0, 0.04);
 }
+
+.MuiButton-root.cancelButton {
+  color: gray;
+  border-color: gray;
+}
+
+.MuiButton-root.cancelButton:hover {
+  border-color: gray;
+}
