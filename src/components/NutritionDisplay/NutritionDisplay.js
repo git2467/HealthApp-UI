@@ -191,7 +191,7 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
   // ------------ handlers for user input change
   const handleTextChange = async (event) => {
     // Validate the value: only numbers with 1 decimal place, (up to 9999.9)
-    const decimalRegex = /^$|^[0-9]{1,4}(\.[0-9]{0,1})?$/;
+    const decimalRegex = /^$|^([0-9]{1,4}(\.[0-9]?)?|\.[0-9]?)$/;
 
     // Return early if validation fails
     if (!decimalRegex.test(event.target.value)) {
@@ -202,9 +202,13 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
 
   const handleTextBlur = (event) => {
     var value = event.target.value;
-    // Check if the value ends with a decimal point but no digits after it (e.g., "31.")
-    if (value.endsWith(".") && !value.includes(".")) {
-      value = `${value}0`; // Add the "0" after the decimal point
+    // Allow value inputs up to 4digits and 1d.p (e.g. "1111.1") and its incomplete form (e.g. "1.", "1", ".", ".1")
+    if (value === "." || value === "") {
+      value = "0.0"; // Format "." to "0.0"
+    } else if (value.startsWith(".") && value.length === 2) {
+      value = `0${value}`; // Format ".1" to "0.1"
+    } else if (value.endsWith(".") && value.includes(".")) {
+      value = `${value}0`; // Add "0" after the decimal point if it ends with "."
     } else {
       value = parseFloat(value).toFixed(1); // Format to 1 decimal place
     }
@@ -345,7 +349,7 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
                   variant="outlined"
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={3.5}>
                 <FormControl>
                   <InputLabel className="primary-select-label">
                     Meal Type
@@ -363,19 +367,20 @@ export default function NutritionDisplay({ selectedFood, onAddToDiary }) {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={2.5}>
+              <Grid item xs={2}>
                 <Box>
                   <TextField
                     label="Serving"
                     className="primary-textfield servingTextField"
                     value={foodServingQty}
                     onChange={handleTextChange}
+                    onBlur={handleTextBlur}
                     variant="outlined"
                   />
                 </Box>
               </Grid>
 
-              <Grid item xs={5.5}>
+              <Grid item xs={6.5}>
                 <FormControl className="servingSize">
                   <InputLabel className="primary-select-label">
                     Serving Size

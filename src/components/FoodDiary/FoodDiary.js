@@ -561,8 +561,8 @@ export default function FoodDiary({ foodDate, key, onDateChange }) {
     changeType
   ) => {
     if (fieldToUpdate == "foodServingQty") {
-      // Validate the value: only numbers with 1 decimal place, (up to 9999.9)
-      const decimalRegex = /^$|^[0-9]{1,4}(\.[0-9]{0,1})?$/;
+      // Allow value inputs up to 4digits and 1d.p (e.g. "1111.1") and its incomplete form (e.g. "1.", "1", ".", ".1")
+      const decimalRegex = /^$|^([0-9]{1,4}(\.[0-9]?)?|\.[0-9]?)$/;
 
       // Return early if validation fails
       if (!decimalRegex.test(value)) {
@@ -602,9 +602,13 @@ export default function FoodDiary({ foodDate, key, onDateChange }) {
             );
             updateGroupedRows(updatedRow);
             if (changeType === "blur") {
-              // Format incomplete value inputs to 1dp (e.g. "1.", "1")
-              if (value.endsWith(".") && !value.includes(".")) {
-                value = `${value}0`; // Add the "0" after the decimal point
+              // Format incomplete value inputs to 1dp (e.g. "1.", "1", ".", ".1")
+              if (value === "." || value === "") {
+                value = "0.0"; // Format "." to "0.0"
+              } else if (value.startsWith(".") && value.length === 2) {
+                value = `0${value}`; // Format ".1" to "0.1"
+              } else if (value.endsWith(".") && value.includes(".")) {
+                value = `${value}0`; // Add "0" after the decimal point if it ends with "."
               } else {
                 value = parseFloat(value).toFixed(1); // Format to 1 decimal place
               }
