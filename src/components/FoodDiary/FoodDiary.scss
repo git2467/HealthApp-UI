@@ -1,27 +1,19 @@
 @use "../Global.scss" as *;
 
-.dateSelectorContainer {
-    display: flex;
-    justify-content: center; 
-  }
-
-.foodDiaryHeader h1 {
-    margin-right: 10px;
+.foodDiaryDateSelector {
+  display: flex;
+  justify-content: center;
 }
 
-
-.foodDiaryTableContainer {
-    margin: 0 50px;
-
+.foodDiaryTable {
+  margin: 0 50px;
 }
 
 .totalNutrientsContainer {
-    display: flex;
-    justify-content: flex-end;
-
+  display: flex;
+  justify-content: flex-end;
 }
 
 .nutrientTableSpacer {
-    width: 97px;
+  width: 97px;
 }
-

@@ -43,7 +43,7 @@ engineAxiosInstance.interceptors.response.use(
         await logout();
         return Promise.reject(error);
       } else {
-        await refreshToken();
+        await relogin();
         return engineAxiosInstance.request(error.config);
       }
     }
@@ -85,7 +85,7 @@ export const login = async (code) => {
   }
 };
 
-export const refreshToken = async () => {
+export const relogin = async () => {
   try {
     const refreshToken = getCookie("refreshToken");
 
@@ -118,6 +118,7 @@ export const refreshToken = async () => {
     document.cookie = `refreshToken=${newRefreshToken}; path=/; Secure; SameSite=Strict; max-age=86400;`;
 
     setTokenInAxios(newAccessToken);
+    return newAccessToken;
   } catch (error) {
     console.error("Error refreshing token: ", error);
     throw error;
@@ -178,5 +179,26 @@ export const updateAge = async (age) => {
   } catch (error) {
     console.error("Error updating age: ", error);
     throw error;
+  }
+};
+
+export const checkTokenExpiry = (cookieName) => {
+  const accessToken = getCookie(cookieName);
+
+  try {
+    const expiryTime = JSON.parse(atob(accessToken.split(".")[1]));
+    const currentTime = Math.floor(Date.now() / 1000);
+
+    if (expiryTime.exp < currentTime) {
+      removeCookie(cookieName);
+      console.log(`${cookieName} has expired and been removed.`);
+      return true;
+    }
+
+    return false;
+  } catch (error) {
+    console.error(`Invalid token ${cookieName}:`, error);
+    removeCookie(cookieName);
+    return true;
   }
 };

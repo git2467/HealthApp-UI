@@ -1,13 +1,18 @@
 import React, { useState, useEffect, useContext } from "react";
 import dayjs from "dayjs";
-import { jwtDecode } from "jwt-decode";
-import { login, refreshToken, getCookie } from "../../api/KeycloakApi";
-import { AuthContext } from "../../context/AuthContext";
-
 import Header from "../Header/Header";
 import Search from "../Search/Search";
 import NutritionDisplay from "../NutritionDisplay/NutritionDisplay";
 import FoodDiary from "../FoodDiary/FoodDiary";
+import {
+  login,
+  relogin,
+  getCookie,
+  checkTokenExpiry,
+} from "../../api/KeycloakApi";
+import { jwtDecode } from "jwt-decode";
+import { AuthContext } from "../../context/AuthContext";
+import { Alert } from "@mui/material";
 
 import "./MainContainer.scss";
 
@@ -44,6 +49,7 @@ const MainContainer = () => {
           const response = await login(code);
           setDecodedToken(response);
           setIsLogin(true);
+          window.history.replaceState(null, "", "/");
         } catch (error) {
           console.error("Error in handleLogin:", error);
           setIsLogin(false);
@@ -51,18 +57,23 @@ const MainContainer = () => {
       };
       handleLogin();
     } else if (accessToken) {
-      //when user refresh page
-      const handleRefreshPage = async () => {
-        try {
-          await refreshToken();
-          setDecodedToken(jwtDecode(accessToken));
-          setIsLogin(true);
-        } catch (error) {
-          console.error("Error in handleRefreshPage:", error);
-          setIsLogin(false);
-        }
-      };
-      handleRefreshPage();
+      if (checkTokenExpiry("accessToken")) {
+        //when token expire
+        setIsLogin(false);
+      } else {
+        //when user refresh page
+        const handleRefreshPage = async () => {
+          try {
+            const newAccessToken = await relogin();
+            setDecodedToken(jwtDecode(newAccessToken));
+            setIsLogin(true);
+          } catch (error) {
+            console.error("Error in handleRefreshPage:", error);
+            setIsLogin(false);
+          }
+        };
+        handleRefreshPage();
+      }
     }
   }, [code]);
 
@@ -89,17 +100,22 @@ const MainContainer = () => {
         }}
       />
       <div className="foodDiaryContainer">
-        {isLogin ? (
+        <div className="foodDiaryHeader">
+          <h1>Food Diary</h1>
+          {!isLogin && (
+            <Alert className="signInPrompt" severity="info">
+              Please sign in to use the Food Diary feature.
+            </Alert>
+          )}
+        </div>
+        <div className={`foodDiaryWrapper ${isLogin ? "" : "blurred"}`}>
           <FoodDiary
+            isLogin={isLogin}
             foodDate={diaryDate}
             key={refreshKey}
             onDateChange={handleDateChange}
           />
-        ) : (
-          <>
-            <h1>Please sign in to use the Food Diary feature</h1>
-          </>
-        )}
+        </div>
       </div>
     </div>
   );

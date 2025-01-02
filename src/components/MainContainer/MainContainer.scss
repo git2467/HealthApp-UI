@@ -17,6 +17,17 @@
   }
 }
 
+.foodDiaryHeader {
+  margin-bottom: 24px;
+}
+
 .foodDiaryContainer {
   margin: 0 24px;
+}
+
+.blurred {
+  filter: blur(4px);
+  pointer-events: none;
+  position: relative;
+  opacity: 0.5;
 }
