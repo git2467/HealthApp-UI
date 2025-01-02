@@ -1,0 +1,101 @@
+[
+  [
+    "Breakfast",
+    {
+      "id": "9",
+      "fdcId": "173858",
+      "foodMeal": "Breakfast",
+      "foodName": "Chicken spread",
+      "foodServingQty": 1,
+      "foodServingSizeUnitValue": 1,
+      "foodServingSizeUnit": "serving (1 serving)",
+      "foodServingSizeGramValue": 56,
+      "createdOn": "2024-12-27T08:18:03.761+00:00",
+      "servingSizeDisplay": [
+        {
+          "foodServingSizeUnitValue": 1,
+          "foodServingSizeUnit": "serving (1 serving)",
+          "foodServingSizeGramValue": 56,
+          "value": "1 serving (1 serving) (56g)",
+          "label": "1 serving (1 serving) (56g)",
+          "selected": true
+        }
+      ],
+      "energy": "88.48",
+      "fat": "9.83",
+      "cholesterol": "31.36",
+      "sodium": "404.32",
+      "carbohydrate": "2.27",
+      "protein": "10.09"
+    }
+  ],
+  [
+    "Lunch",
+    {
+      "id": "10",
+      "fdcId": "169886",
+      "foodMeal": "Lunch",
+      "foodName": "Chicken, meatless",
+      "foodServingQty": 1,
+      "foodServingSizeUnitValue": 1,
+      "foodServingSizeUnit": "cup",
+      "foodServingSizeGramValue": 168,
+      "createdOn": "2024-12-27T08:18:08.767+00:00",
+      "servingSizeDisplay": [
+        {
+          "foodServingSizeUnitValue": 1,
+          "foodServingSizeUnit": "cup",
+          "foodServingSizeGramValue": 168,
+          "value": "1 cup (168g)",
+          "label": "1 cup (168g)",
+          "selected": true
+        }
+      ],
+      "energy": "376.32",
+      "fat": "21.39",
+      "cholesterol": "0.00",
+      "sodium": "1191.12",
+      "carbohydrate": "6.12",
+      "protein": "39.72"
+    }
+  ],
+  [
+    "Dinner",
+    {
+      "id": "11",
+      "fdcId": "173564",
+      "foodMeal": "Dinner",
+      "foodName": "Fat, chicken",
+      "foodServingQty": 1,
+      "foodServingSizeUnitValue": 1,
+      "foodServingSizeUnit": "cup",
+      "foodServingSizeGramValue": 205,
+      "createdOn": "2024-12-27T08:18:13.545+00:00",
+      "servingSizeDisplay": [
+        {
+          "foodServingSizeUnitValue": 1,
+          "foodServingSizeUnit": "cup",
+          "foodServingSizeGramValue": 205,
+          "value": "1 cup (205g)",
+          "label": "1 cup (205g)",
+          "selected": true
+        },
+        {
+          "foodServingSizeUnitValue": 1,
+          "foodServingSizeUnit": "tbsp",
+          "foodServingSizeGramValue": 12.8,
+          "value": "1 tbsp (12.8g)",
+          "label": "1 tbsp (12.8g)",
+          "selected": false
+        }
+      ],
+      "energy": "1845.00",
+      "fat": "204.59",
+      "cholesterol": "174.25",
+      "sodium": "0.00",
+      "carbohydrate": "0.00",
+      "protein": "0.00"
+    }
+  ],
+  ["Snack"]
+]

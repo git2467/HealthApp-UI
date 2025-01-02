@@ -8,6 +8,7 @@ import {
   updateFoodEntry,
 } from "../../api/EngineApi";
 import nutrition from "../../constants/nutrition.json";
+import sampleFoodDiary from "../../constants/sampleFoodDiary.json";
 import { debounce } from "lodash";
 import { AuthContext } from "../../context/AuthContext";
 import DateSelector from "../DateSelector/DateSelector";
@@ -28,11 +29,16 @@ export const calculateFoodNutrients = (
   return foodNutrients;
 };
 
-export default function FoodDiary({ foodDate, key, onDateChange }) {
+export default function FoodDiary({
+  isLogin,
+  foodDate,
+  refreshKey,
+  onDateChange,
+}) {
   foodDate = dayjs(foodDate).format("YYYY-MM-DD");
   const { decodedToken } = useContext(AuthContext);
-  const keycloakId = decodedToken.sub;
-  const age = decodedToken.age;
+  const keycloakId = decodedToken?.sub;
+  const age = decodedToken?.age;
 
   const { nutritionUnits, recommendedByAgeGroup } = nutrition;
   const recommendedNutrients = recommendedByAgeGroup[age];
@@ -475,14 +481,19 @@ export default function FoodDiary({ foodDate, key, onDateChange }) {
 
   // update food entries when date changes
   useEffect(() => {
-    if (foodDate !== null) {
-      updateFoodEntryByDate();
+    if (!isLogin) {
+      setRows(sampleFoodDiary);
+    } else {
+      setRows(null);
+      if (foodDate !== null) {
+        updateFoodEntryByDate();
+      }
     }
-  }, [foodDate, key]);
+  }, [isLogin, foodDate, refreshKey]);
 
   // update food entries when other thing changes besides date
   useEffect(() => {
-    if (rows) {
+    if (isLogin && rows) {
       // Calculate the totals
       const totals = calculateColumnTotals(rows);
       const remaining = calculateRemaining(totals);
@@ -656,17 +667,14 @@ export default function FoodDiary({ foodDate, key, onDateChange }) {
 
   return (
     <>
-      <div className="foodDiaryHeader">
-        <h1>Food Diary</h1>
-        <div className="dateSelectorContainer">
-          <DateSelector
-            date={foodDate}
-            onDateChange={onDateChange}
-            showNavButtons={true}
-          />
-        </div>
+      <div className="foodDiaryDateSelector">
+        <DateSelector
+          date={foodDate}
+          onDateChange={onDateChange}
+          showNavButtons={true}
+        />
       </div>
-      <div className="foodDiaryTableContainer">
+      <div className="foodDiaryTable">
         <Table
           columns={columns}
           groupedRows={rows}

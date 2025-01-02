@@ -13,6 +13,7 @@ import {
 } from "../../api/KeycloakApi";
 import { jwtDecode } from "jwt-decode";
 import { AuthContext } from "../../context/AuthContext";
+import { Alert } from "@mui/material";
 
 const MainContainer = () => {
   const { setDecodedToken, isLogin, setIsLogin } = useContext(AuthContext);
@@ -39,7 +40,6 @@ const MainContainer = () => {
 
   useEffect(() => {
     const accessToken = getCookie("accessToken");
-    const refreshToken = getCookie("refreshToken");
 
     //use authorisation code to retrieve access token
     if (code && !accessToken) {
@@ -48,6 +48,7 @@ const MainContainer = () => {
           const response = await login(code);
           setDecodedToken(response);
           setIsLogin(true);
+          window.history.replaceState(null, "", "/");
         } catch (error) {
           console.error("Error in handleLogin:", error);
           setIsLogin(false);
@@ -92,17 +93,22 @@ const MainContainer = () => {
         </div>
       </div>
       <div className="foodDiaryContainer">
-        {isLogin ? (
+        <div className="foodDiaryHeader">
+          <h1>Food Diary</h1>
+          {!isLogin && (
+            <Alert className="signInPrompt" severity="info">
+              Please sign in to use the Food Diary feature.
+            </Alert>
+          )}
+        </div>
+        <div className={`foodDiaryWrapper ${isLogin ? "" : "blurred"}`}>
           <FoodDiary
+            isLogin={isLogin}
             foodDate={diaryDate}
             key={refreshKey}
             onDateChange={handleDateChange}
           />
-        ) : (
-          <>
-            <h1>Please sign in to use the Food Diary feature</h1>
-          </>
-        )}
+        </div>
       </div>
     </div>
   );

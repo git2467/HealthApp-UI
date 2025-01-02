@@ -183,18 +183,11 @@ export const updateAge = async (age) => {
 };
 
 export const checkTokenExpiry = (cookieName) => {
-  const token = getCookie(cookieName);
+  const accessToken = getCookie(cookieName);
 
   try {
-    const expiryTime = JSON.parse(atob(token.split(".")[1]));
+    const expiryTime = JSON.parse(atob(accessToken.split(".")[1]));
     const currentTime = Math.floor(Date.now() / 1000);
-
-    console.log(expiryTime.exp);
-    console.log(currentTime);
-
-    //for testing - aljw
-    // expiryTime = JSON.parse(1735286469);
-    // console.log(expiryTime.exp);
 
     if (expiryTime.exp < currentTime) {
       removeCookie(cookieName);
