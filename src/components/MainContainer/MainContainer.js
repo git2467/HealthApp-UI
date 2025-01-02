@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useContext } from "react";
 import dayjs from "dayjs";
+import { jwtDecode } from "jwt-decode";
+import { login, refreshToken, getCookie } from "../../api/KeycloakApi";
+import { AuthContext } from "../../context/AuthContext";
+
 import Header from "../Header/Header";
 import Search from "../Search/Search";
-import "./MainContainer.scss";
 import NutritionDisplay from "../NutritionDisplay/NutritionDisplay";
 import FoodDiary from "../FoodDiary/FoodDiary";
-import { login, refreshToken, getCookie } from "../../api/KeycloakApi";
-import { jwtDecode } from "jwt-decode";
-import { AuthContext } from "../../context/AuthContext";
+
+import "./MainContainer.scss";
 
 const MainContainer = () => {
   const { setDecodedToken, isLogin, setIsLogin } = useContext(AuthContext);

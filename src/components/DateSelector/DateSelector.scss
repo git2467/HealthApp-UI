@@ -1,0 +1,30 @@
+@use "../Global.scss" as *;
+
+.datePicker.MuiTextField-root {
+    background-color: white;
+    width: 150px;
+}
+  
+.datePicker.MuiTextField-root fieldset {
+border: 1px solid $primary-color;
+}
+
+.datePicker.MuiTextField-root:hover fieldset {
+border: 2px solid $primary-color;
+}
+
+.datePicker.MuiTextField-root .Mui-focused {
+color: $primary-color;
+}
+
+.datePicker.MuiTextField-root .Mui-focused fieldset {
+border: 2px solid $primary-color;
+}
+
+.datePicker.MuiTextField-root .Mui-focused input {
+color: black;
+}
+
+.MuiPickersDay-root.Mui-selected {
+    background-color: $primary-color !important;
+}

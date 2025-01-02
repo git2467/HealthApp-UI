@@ -68,6 +68,46 @@
   opacity: 0.8;
 }
 
+.confirm-button:hover {
+  opacity: 0.8;
+}
+
 .nutrition-display-table .tableRow .MuiTableCell-root:first-child {
   font-weight: bold;
-} 
+}
+
+.nutrition-display-form .MuiPaper-root {
+  width: 550px;
+}
+
+.nutrition-display-form .MuiDialogContent-root {
+  margin: 0 10px 0 16px;
+}
+
+.nutrition-display-form .MuiDialogContent-root .MuiGrid-item {
+  padding: 0px;
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  margin-top: 24px;
+}
+
+.foodName {
+  width: 100%;
+}
+
+.foodName .MuiInputBase-input {
+  text-overflow: ellipsis;
+}
+
+.mealType {
+  width: 129.5px;
+}
+
+.servingTextField {
+  width: 68px;
+}
+
+.servingSize {
+  width: 270px;
+}

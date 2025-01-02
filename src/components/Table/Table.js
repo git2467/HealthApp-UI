@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import "./Table.scss";
 
+import DeleteIcon from "@mui/icons-material/Delete";
 import {
   Table as MuiTable,
   TableBody,
@@ -20,7 +20,8 @@ import {
   Button,
 } from "@mui/material";
 
-import DeleteIcon from "@mui/icons-material/Delete";
+import "./Table.scss";
+import "../Button/Button.scss";
 
 export default function Table({
   columns,
@@ -69,9 +70,8 @@ export default function Table({
     onInputChange(event.target.value, row, field);
   };
 
-  // blur lets parent component know that user has exited the textfield
   const handleTextBlur = (event, row, field) => {
-    onInputChange(event.target.value, row, field, "blur");
+    onInputChange(event.target.value, row, field, "blur", event);
   };
 
   const handleSelectChange = (event, row, field) => {
@@ -175,7 +175,7 @@ export default function Table({
                             />
                           ) : column.type === "select" ? (
                             <Select
-                              className="tableGroupedSelect"
+                              className="primary-select"
                               value={
                                 row[column.field]?.find(
                                   (option) => option.selected
@@ -228,8 +228,8 @@ export default function Table({
           </DialogContent>
           <DialogActions>
             <Button
+              className="cancelButton"
               onClick={handleCloseDeleteModal}
-              color="primary"
               variant="outlined"
             >
               Cancel

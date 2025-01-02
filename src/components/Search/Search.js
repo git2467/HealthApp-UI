@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { fetchFoods } from "../../api/FDCApi";
-import Table from "../Table/Table";
 import "./Search.scss";
 import "../TextField/TextField.scss";
 
