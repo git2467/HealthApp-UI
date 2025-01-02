@@ -64,9 +64,10 @@
   align-items: stretch;
 }
 
-.add-to-diary-button.MuiButtonBase-root {
-}
-
 .add-to-diary-button:hover {
   opacity: 0.8;
 }
+
+.nutrition-display-table .tableRow .MuiTableCell-root:first-child {
+  font-weight: bold;
+} 

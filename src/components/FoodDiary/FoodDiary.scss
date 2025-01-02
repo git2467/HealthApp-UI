@@ -1,3 +1,5 @@
+@use "../Global.scss" as *;
+
 .foodDiaryDateSelector {
   display: flex;
   justify-content: center;
@@ -18,4 +20,16 @@
 
 .tableGroupedSelect {
   background-color: white;
+}
+
+.tableGroupedSelect.MuiInputBase-root fieldset {
+  border: 1px solid $primary-color;
+}
+
+.tableGroupedSelect.MuiInputBase-root:hover fieldset {
+  border: 2px solid $primary-color;
+}
+
+.tableGroupedSelect.MuiInputBase-root.Mui-focused fieldset {
+  border: 2px solid $primary-color;
 }

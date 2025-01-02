@@ -680,7 +680,7 @@ export default function FoodDiary({
           groupedRows={rows}
           onDelete={handleDelete}
           onInputChange={handleInputChange}
-          showBorders={true}
+          showVertBorders={true}
         />
         {rows && (
           <div className="totalNutrientsContainer">

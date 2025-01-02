@@ -92,6 +92,12 @@ const MainContainer = () => {
           )}
         </div>
       </div>
+      <hr
+        style={{
+          border: "0.5px solid #e0e0e0",
+          margin: "20px 0",
+        }}
+      />
       <div className="foodDiaryContainer">
         <div className="foodDiaryHeader">
           <h1>Food Diary</h1>

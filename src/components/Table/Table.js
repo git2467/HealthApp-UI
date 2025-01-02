@@ -164,7 +164,7 @@ export default function Table({
                           {/* Render based on column type */}
                           {column.type === "input" ? (
                             <TextField
-                              className="primary-textfield table-textfield"
+                              className="primary-textfield"
                               value={row[column.field]}
                               onChange={(event) =>
                                 handleTextChange(event, row, column.field)
@@ -175,7 +175,7 @@ export default function Table({
                             />
                           ) : column.type === "select" ? (
                             <Select
-                              className={isGrouped ? "tableGroupedSelect" : ""}
+                              className="tableGroupedSelect"
                               value={
                                 row[column.field]?.find(
                                   (option) => option.selected
