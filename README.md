@@ -30,7 +30,7 @@ Upon clicking a `Chip`, the nutritional breakdown of a selected food item will b
 
 User required to login for access to personal food diary.
 
-<video src="public/readme/login.mp4" autoplay muted loop controls></video>
+<video src="https://github.com/user-attachments/assets/60b2cddf-9dce-4b04-8518-d81e015ad4d0" autoplay muted loop controls></video>
 
 #### 3.2 Adding to Food Diary
 
